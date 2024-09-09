@@ -1,7 +1,7 @@
 export default function Register() {
     return (
         <div className="w-full min-h-screen flex items-center justify-center align-middle bg-slate-900">
-            <div className="box">
+            <div className="box-register">
                 <form id="register-form" autoComplete="off" method="post">
                     <h1>Cadastro</h1>
                     
@@ -30,7 +30,7 @@ export default function Register() {
                     </div>
 
                     <div className="links">
-                        <a href="#">Já tem uma conta? Login</a>
+                        <a href="/login">Já tem uma conta? Login</a>
                     </div>
 
                     <input type="submit" value="Cadastrar" />

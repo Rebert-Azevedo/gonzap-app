@@ -2,10 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-.box{
+.box-login{
 	position: relative;
 	width: 380px;
 	height: 420px;
+	background: #1c1c1c;
+	border-radius: 8px;
+	border: 1.5px solid #ff9800; /* Borda laranja fixa */
+	overflow: hidden;
+}
+
+.box-register{
+	position: relative;
+	width: 380px;
+	height: 620px;
 	background: #1c1c1c;
 	border-radius: 8px;
 	border: 1.5px solid #ff9800; /* Borda laranja fixa */

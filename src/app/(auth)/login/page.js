@@ -1,7 +1,7 @@
 export default function Login() {
     return (
         <div className="w-full min-h-screen flex items-center justify-center align-middle bg-slate-900">
-            <div class="box">
+            <div class="box-login">
                 <form id="login-form" autocomplete="off" method="get">
                     <h1>Login</h1>
                     <div class="inputBox">
@@ -16,7 +16,7 @@ export default function Login() {
                     </div>
                     <div class="links">
                         <a href="#">Forgot Password ?</a>
-                        <a href="../register/register.html">Signup</a>
+                        <a href="/register">Signup</a>
                     </div>
                     <input type="submit" value="Login" />
                 </form>
