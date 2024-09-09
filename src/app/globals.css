@@ -2,31 +2,124 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #000; /*Preto*/
-  --foreground: #ff9800; /*Laranja*/
+.box{
+	position: relative;
+	width: 380px;
+	height: 420px;
+	background: #1c1c1c;
+	border-radius: 8px;
+	border: 1.5px solid #ff9800; /* Borda laranja fixa */
+	overflow: hidden;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #000; /*Já está preto*/
-    --foreground: #ff9800; /*Çaranja*/
-  }
+form{
+	position: absolute;
+	inset: 2px;
+	background: #28292d;
+	padding: 50px 40px;
+	border-radius: 8px;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+h1{
+	color: #ff9800;
+	font-weight: 500;
+	text-align: center;
+	letter-spacing: 0.1em;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-  .orange {
-    color: var(--foreground); /*Aplica a cor laranja definida na variável*/
-  }
+.inputBox{
+	position: relative;
+	width: 300px;
+	margin-top: 35px;
 }
+
+.inputBox input{
+	position: relative;
+	width: 100%;
+	padding: 20px 10px 10px;
+	background: transparent;
+	outline: none;
+	box-shadow: none;
+	border: none;
+	color: #23242a;
+	font-size: 1em;
+	letter-spacing: 0.05em;
+	transition: 0.5s;
+	z-index: 10;
+}
+
+.inputBox span{
+	position: absolute;
+	left: 0;
+	padding: 20px 0px 10px;
+	pointer-events: none;
+	font-size: 1em;
+	color: #8f8f8f;
+	letter-spacing: 0.05em;
+	transition: 0.5s;
+}
+
+.inputBox input:valid ~ span,
+.inputBox input:focus ~ span{
+	color: #ff9800;
+	transform: translateX(0px) translateY(-34px);
+	font-size: 0.75em;
+}
+
+.inputBox i{
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	height: 2px;
+	background: #ff9800;
+	border-radius: 4px;
+	overflow: hidden;
+	transition: 0.5s;
+	pointer-events: none;
+	z-index: 9;
+}
+
+.inputBox input:valid ~ i,
+.inputBox input:focus ~ i{
+	height: 44px;
+}
+
+.links{
+	display: flex;
+	justify-content: space-between;
+}
+
+.links a{
+	margin: 10px 0;
+	font-size: 0.75em;
+	color: #8f8f8f;
+	text-decoration: beige;
+}
+
+.links a:hover, 
+.links a:nth-child(2){
+	color: #ff9800;
+}
+
+input[type="submit"]{
+	border: none;
+	outline: none;
+	padding: 11px 25px;
+	background: #ff9800;
+	cursor: pointer;
+	border-radius: 4px;
+	font-weight: 600;
+	width: 130px;
+	margin-top: 10px;
+}
+
+input[type="submit"]:active{
+	opacity: 0.8;
+}
+
 
 /*Laranja: ff9800*/
