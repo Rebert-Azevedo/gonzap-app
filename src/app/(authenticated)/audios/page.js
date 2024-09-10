@@ -42,15 +42,36 @@ function GerenciarAudios() {
           className="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
         />
         <input
-          type="text"
-          placeholder="URL do áudio"
-          value={novoAudio.audio}
-          onChange={(e) => setNovoAudio({ ...novoAudio, audio: e.target.value })}
-          className="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
+          id="audio-upload"
+          type="file"
+          accept="audio/*"
+          onChange={(e) => {
+            const file = e.target.files[0];
+            if (file) {
+              const audioURL = URL.createObjectURL(file);
+              setNovoAudio({ ...novoAudio, audio: audioURL });
+            }
+          }}
+          className="hidden" // escondendo o input padrão
         />
+
+        <div className="w-full flex justify-center mb-4">
+          <label
+            htmlFor="audio-upload"
+            className="w-1/2 cursor-pointer bg-indigo-500 text-white py-2 px-4 rounded-md text-center hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-opacity-50"
+          >
+            Selecionar áudio
+          </label>
+        </div>
+
+        {/* Botão de adicionar com controle de desabilitado */}
         <button
           onClick={handleAdicionarAudio}
-          className="w-full bg-indigo-500 text-white py-2 rounded-md font-semibold hover:bg-indigo-600 transition-colors"
+          className={`w-full py-2 rounded-md font-semibold transition-colors ${!novoAudio.nome || !novoAudio.audio
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-indigo-500 text-white hover:bg-indigo-600"
+            }`}
+          disabled={!novoAudio.nome || !novoAudio.audio} // desabilita o botão se o nome ou o áudio estiverem vazios
         >
           Adicionar
         </button>
