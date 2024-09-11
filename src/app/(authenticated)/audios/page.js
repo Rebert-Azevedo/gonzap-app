@@ -3,23 +3,36 @@ import React, { useState } from 'react';
 
 function GerenciarAudios() {
   const [audios, setAudios] = useState([]);
-  const [novoAudio, setNovoAudio] = useState({ nome: '', audio: '' });
+  const [novoAudio, setNovoAudio] = useState({ nome: '', arquivo: null });
   const [termoBusca, setTermoBusca] = useState('');
 
   const handleAdicionarAudio = () => {
-    setAudios([...audios, novoAudio]);
-    setNovoAudio({ nome: '', audio: '' });
+    // Cria um novo objeto de áudio com URL temporária para reprodução
+    const novoAudioComURL = {
+      nome: novoAudio.nome,
+      arquivo: novoAudio.arquivo,
+      audioURL: URL.createObjectURL(novoAudio.arquivo) // Cria URL temporária para reprodução
+    };
+    setAudios([...audios, novoAudioComURL]);
+    setNovoAudio({ nome: '', arquivo: null });
   };
 
   const handleExcluirAudio = (index) => {
     const novosAudios = [...audios];
+    URL.revokeObjectURL(novosAudios[index].audioURL); // Libera a URL do objeto quando o áudio é removido
     novosAudios.splice(index, 1);
     setAudios(novosAudios);
   };
 
-  const handleEditarAudio = (index, novoNome, novoAudio) => {
+  const handleEditarAudio = (index, novoNome, novoArquivo) => {
     const novosAudios = [...audios];
-    novosAudios[index] = { nome: novoNome, audio: novoAudio };
+    // Se o arquivo mudar, cria uma nova URL
+    const novoAudioComURL = {
+      nome: novoNome,
+      arquivo: novoArquivo,
+      audioURL: novoArquivo ? URL.createObjectURL(novoArquivo) : novosAudios[index].audioURL
+    };
+    novosAudios[index] = novoAudioComURL;
     setAudios(novosAudios);
   };
 
@@ -28,7 +41,7 @@ function GerenciarAudios() {
   );
 
   return (
-    <div className="flex flex-col items-center w-full px-6 py-4  min-h-screen">
+    <div className="flex flex-col items-center w-full px-6 py-4 min-h-screen">
       <div className="mb-10">
         <h2 className="text-4xl font-bold text-gray-800">Gerenciar Áudios</h2>
       </div>
@@ -48,8 +61,7 @@ function GerenciarAudios() {
           onChange={(e) => {
             const file = e.target.files[0];
             if (file) {
-              const audioURL = URL.createObjectURL(file);
-              setNovoAudio({ ...novoAudio, audio: audioURL });
+              setNovoAudio({ ...novoAudio, arquivo: file });
             }
           }}
           className="hidden" // escondendo o input padrão
@@ -67,11 +79,11 @@ function GerenciarAudios() {
         {/* Botão de adicionar com controle de desabilitado */}
         <button
           onClick={handleAdicionarAudio}
-          className={`w-full py-2 rounded-md font-semibold transition-colors ${!novoAudio.nome || !novoAudio.audio
+          className={`w-full py-2 rounded-md font-semibold transition-colors ${!novoAudio.nome || !novoAudio.arquivo
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
             : "bg-indigo-500 text-white hover:bg-indigo-600"
             }`}
-          disabled={!novoAudio.nome || !novoAudio.audio} // desabilita o botão se o nome ou o áudio estiverem vazios
+          disabled={!novoAudio.nome || !novoAudio.arquivo} // desabilita o botão se o nome ou o áudio estiverem vazios
         >
           Adicionar
         </button>
@@ -98,7 +110,16 @@ function GerenciarAudios() {
             {audiosFiltrados.map((audio, index) => (
               <tr key={index} className="border-b">
                 <td className="py-3 px-4 text-gray-800">{audio.nome}</td>
-                <td className="py-3 px-4 text-indigo-500 truncate">{audio.audio}</td>
+                <td className="py-3 px-4 text-indigo-500 truncate">
+                  {audio.audioURL ? (
+                    <audio controls>
+                      <source src={audio.audioURL} type="audio/mpeg" />
+                      Seu navegador não suporta o elemento de áudio.
+                    </audio>
+                  ) : (
+                    'Sem áudio'
+                  )}
+                </td>
                 <td className="py-3 px-4 flex justify-center space-x-4">
                   <button
                     onClick={() => handleExcluirAudio(index)}
@@ -106,7 +127,10 @@ function GerenciarAudios() {
                   >
                     Excluir
                   </button>
-                  <button className="text-blue-500 font-semibold hover:text-blue-600 transition-colors">
+                  <button
+                    onClick={() => handleEditarAudio(index, audio.nome, audio.arquivo)}
+                    className="text-blue-500 font-semibold hover:text-blue-600 transition-colors"
+                  >
                     Editar
                   </button>
                 </td>
@@ -116,7 +140,6 @@ function GerenciarAudios() {
         </table>
       </div>
     </div>
-
   );
 }
 
