@@ -49,7 +49,7 @@ function GerenciarMensagens() {
           placeholder="Nome da mensagem"
           value={novaMensagem.nome}
           onChange={(e) => setNovaMensagem({ ...novaMensagem, nome: e.target.value })}
-          className="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
+          className="w-full p-3 border text-black border-gray-300 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
         />
         <input
           id="mensagem-texto"
@@ -57,7 +57,7 @@ function GerenciarMensagens() {
           placeholder="Escreva sua mensagem"
           value={novaMensagem.mensagem}
           onChange={(e) => setNovaMensagem({ ...novaMensagem, mensagem: e.target.value })}
-          className="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
+          className="w-full p-3 border text-black border-gray-300 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
         />
 
         <button
