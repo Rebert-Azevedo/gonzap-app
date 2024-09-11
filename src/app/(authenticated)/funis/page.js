@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 
 function GerenciarFunis() {
-  const [documentos, setDocumentos] = useState([]);
-  const [novoDocumento, setNovoDocumento] = useState({ nome: '', tipo: '', arquivo: null });
+  const [funis, setFunis] = useState([]);
+  const [novoFuni, setNovoFuni] = useState({ nome: '', tipo: '', arquivo: null });
   const [termoBusca, setTermoBusca] = useState('');
 
   // Simulação de arquivos importados anteriormente
@@ -14,25 +14,25 @@ function GerenciarFunis() {
     { nome: 'Documento 1', tipo: 'documento', arquivo: 'documento1.pdf' },
   ];
 
-  const handleAdicionarDocumento = () => {
-    setDocumentos([...documentos, novoDocumento]);
-    setNovoDocumento({ nome: '', tipo: '', arquivo: null });
+  const handleAdicionarFuni = () => {
+    setFunis([...funis, novoFuni]);
+    setNovoFuni({ nome: '', tipo: '', arquivo: null });
   };
 
-  const handleExcluirDocumento = (index) => {
-    const novosDocumentos = [...documentos];
-    novosDocumentos.splice(index, 1);
-    setDocumentos(novosDocumentos);
+  const handleExcluirFuni = (index) => {
+    const novosFunis = [...funis];
+    novosFunis.splice(index, 1);
+    setFunis(novosFunis);
   };
 
-  const handleEditarDocumento = (index, novoNome, novoTipo, novoArquivo) => {
-    const novosDocumentos = [...documentos];
-    novosDocumentos[index] = { nome: novoNome, tipo: novoTipo, arquivo: novoArquivo };
-    setDocumentos(novosDocumentos);
+  const handleEditarFuni = (index, novoNome, novoTipo, novoArquivo) => {
+    const novosFunis = [...funis];
+    novosFunis[index] = { nome: novoNome, tipo: novoTipo, arquivo: novoArquivo };
+    setFunis(novosFunis);
   };
 
-  const documentosFiltrados = documentos.filter(documento =>
-    documento.nome.toLowerCase().includes(termoBusca.toLowerCase())
+  const funisFiltrados = funis.filter(funi =>
+    funi.nome.toLowerCase().includes(termoBusca.toLowerCase())
   );
 
   return (
@@ -44,14 +44,14 @@ function GerenciarFunis() {
       <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
         <input
           type="text"
-          placeholder="Nome do documento"
-          value={novoDocumento.nome}
-          onChange={(e) => setNovoDocumento({ ...novoDocumento, nome: e.target.value })}
+          placeholder="Nome do funil"
+          value={novoFuni.nome}
+          onChange={(e) => setNovoFuni({ ...novoFuni, nome: e.target.value })}
           className="w-full p-3 border text-black border-gray-300 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
         />
         <select
-          value={novoDocumento.tipo}
-          onChange={(e) => setNovoDocumento({ ...novoDocumento, tipo: e.target.value })}
+          value={novoFuni.tipo}
+          onChange={(e) => setNovoFuni({ ...novoFuni, tipo: e.target.value })}
           className="w-full p-3 border text-black border-gray-300 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
         >
           <option value="">Selecione o tipo de arquivo</option>
@@ -61,26 +61,26 @@ function GerenciarFunis() {
           <option value="documento">Documento</option>
         </select>
         <select
-          value={novoDocumento.arquivo ? novoDocumento.arquivo.nome : ''}
+          value={novoFuni.arquivo ? novoFuni.arquivo.nome : ''}
           onChange={(e) => {
             const arquivoSelecionado = arquivosImportados.find(arquivo => arquivo.nome === e.target.value);
-            setNovoDocumento({ ...novoDocumento, arquivo: arquivoSelecionado });
+            setNovoFuni({ ...novoFuni, arquivo: arquivoSelecionado });
           }}
           className="w-full p-3 border text-black border-gray-300 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
         >
           <option value="">Selecione o arquivo</option>
-          {arquivosImportados.filter(arquivo => arquivo.tipo === novoDocumento.tipo).map((arquivo, index) => (
+          {arquivosImportados.filter(arquivo => arquivo.tipo === novoFuni.tipo).map((arquivo, index) => (
             <option key={index} value={arquivo.nome}>{arquivo.nome}</option>
           ))}
         </select>
 
         <button
-          onClick={handleAdicionarDocumento}
-          className={`w-full py-2 rounded-md font-semibold transition-colors ${!novoDocumento.nome || !novoDocumento.tipo || !novoDocumento.arquivo
+          onClick={handleAdicionarFuni}
+          className={`w-full py-2 rounded-md font-semibold transition-colors ${!novoFuni.nome || !novoFuni.tipo || !novoFuni.arquivo
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
             : "bg-indigo-500 text-white hover:bg-indigo-600"
             }`}
-          disabled={!novoDocumento.nome || !novoDocumento.tipo || !novoDocumento.arquivo} // desabilita o botão se o nome, tipo ou arquivo estiverem vazios
+          disabled={!novoFuni.nome || !novoFuni.tipo || !novoFuni.arquivo} // desabilita o botão se o nome, tipo ou arquivo estiverem vazios
         >
           Adicionar
         </button>
@@ -105,20 +105,20 @@ function GerenciarFunis() {
             </tr>
           </thead>
           <tbody>
-            {documentosFiltrados.map((documento, index) => (
+            {funisFiltrados.map((funi, index) => (
               <tr key={index}>
-                <td className="py-3 px-4">{documento.nome}</td>
-                <td className="py-3 px-4">{documento.tipo}</td>
-                <td className="py-3 px-4">{documento.arquivo.nome}</td>
+                <td className="py-3 px-4">{funi.nome}</td>
+                <td className="py-3 px-4">{funi.tipo}</td>
+                <td className="py-3 px-4">{funi.arquivo.nome}</td>
                 <td className="py-3 px-4 text-center">
                   <button
-                    onClick={() => handleExcluirDocumento(index)}
+                    onClick={() => handleExcluirFuni(index)}
                     className="bg-red-500 text-white py-1 px-2 rounded-md hover:bg-red-600"
                   >
                     Excluir
                   </button>
                   <button
-                    onClick={() => handleEditarDocumento(index, documento.nome, documento.tipo, documento.arquivo)}
+                    onClick={() => handleEditarFuni(index, funi.nome, funi.tipo, funi.arquivo)}
                     className="bg-yellow-500 text-white py-1 px-2 rounded-md hover:bg-yellow-600 ml-2"
                   >
                     Editar
