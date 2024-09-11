@@ -80,7 +80,7 @@ function GerenciarFunis() {
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
             : "bg-indigo-500 text-white hover:bg-indigo-600"
             }`}
-          disabled={!novoFunil.nome || !novoFunil.tipo || !novoFunil.arquivo} // desabilita o botão se o nome, tipo ou arquivo estiverem vazios
+          disabled={!novoFunil.nome || !novoFunil.tipo || !novoFunil.arquivo} // desabilita o botão se o nome, tipo ou arquivo estiverem nulos
         >
           Adicionar
         </button>
