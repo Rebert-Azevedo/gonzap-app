@@ -7,25 +7,47 @@ function GerenciarMensagens() {
   const [termoBusca, setTermoBusca] = useState('');
   const [editandoIndex, setEditandoIndex] = useState(null); // Adiciona um estado para controlar o índice da mensagem que está sendo editada
 
-  const handleAdicionarMensagem = () => {
-    if (editandoIndex !== null) {
-      // Se houver uma mensagem sendo editada, atualize-a
-      const novasMensagens = [...mensagens];
-      novasMensagens[editandoIndex] = novaMensagem;
-      setMensagens(novasMensagens);
-      setEditandoIndex(null); // Reseta o índice após a edição
-    } else {
-      // Adiciona uma nova mensagem
-      setMensagens([...mensagens, novaMensagem]);
-    }
-    setNovaMensagem({ nome: '', mensagem: '' }); // Reseta os campos após adicionar ou editar
-  };
+  const handleAdicionarMensagem = async () => {
+    if (novaMensagem.nome && novaMensagem.mensagem) {
+      let response = await fetch('http://localhost:8000', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nome: novaMensagem.nome,
+          mensagem:novaMensagem.mensagem
+        }),
+      });
 
-  const handleExcluirMensagem = (index) => {
-    const novasMensagens = [...mensagens];
-    novasMensagens.splice(index, 1);
-    setMensagens(novasMensagens);
+      if (response.ok) {
+        const data = await response.json();
+        setMensagens([...mensagens, novaMensagem]);
+        setNovaMensagem({ nome: '', mensagem: '' });
+      } else {
+        console.error('Erro ao adicionar a mensagem:', response);
+      }
+    }
   };
+  
+  const handleExcluirMensagem = async (index) => {
+    const mensagemParaExcluir = mensagens[index];
+    const idParaExcluir = mensagemParaExcluir.id;
+     
+    // Fazer a requisição DELETE para o servidor
+    const response = await fetch(`http://localhost:5000/api/mensagens/${idParaExcluir}`, {
+      method: 'DELETE',
+    });
+  
+    if (response.ok) {
+      // Atualiza a lista de mensagens no frontend
+      const novasMensagens = mensagens.filter((_, i) => i !== index);
+      setMensagens(novasMensagens);
+    } else {
+      console.error('Erro ao excluir a mensagem:', response);
+    }
+  };
+  
 
   const handleEditarMensagem = (index) => {
     const mensagemParaEditar = mensagens[index];
