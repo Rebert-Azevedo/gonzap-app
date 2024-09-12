@@ -16,38 +16,41 @@ function GerenciarMensagens() {
         },
         body: JSON.stringify({
           nome: novaMensagem.nome,
-          mensagem:novaMensagem.mensagem
+          mensagem: novaMensagem.mensagem
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        setMensagens([...mensagens, novaMensagem]);
+        // Inclui o ID retornado pelo backend na mensagem adicionada
+        const mensagemComId = { id: data.id, nome: novaMensagem.nome, mensagem: novaMensagem.mensagem };
+        setMensagens([...mensagens, mensagemComId]);
         setNovaMensagem({ nome: '', mensagem: '' });
       } else {
         console.error('Erro ao adicionar a mensagem:', response);
       }
     }
   };
-  
-  const handleExcluirMensagem = async (index) => {
-    const mensagemParaExcluir = mensagens[index];
-    const idParaExcluir = mensagemParaExcluir.id;
-     
-    // Fazer a requisição DELETE para o servidor
-    const response = await fetch(`http://localhost:5000/api/mensagens/${idParaExcluir}`, {
-      method: 'DELETE',
-    });
-  
-    if (response.ok) {
-      // Atualiza a lista de mensagens no frontend
-      const novasMensagens = mensagens.filter((_, i) => i !== index);
-      setMensagens(novasMensagens);
-    } else {
-      console.error('Erro ao excluir a mensagem:', response);
+
+  const handleExcluirMensagem = async (idParaExcluir) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/mensagens/${idParaExcluir}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Atualiza a lista de mensagens no frontend removendo a mensagem com o ID correspondente
+        const novasMensagens = mensagens.filter(mensagem => mensagem.id !== idParaExcluir);
+        setMensagens(novasMensagens);
+      } else {
+        const errorData = await response.json();
+        console.error('Erro ao excluir a mensagem:', errorData.message || response.statusText);
+      }
+    } catch (error) {
+      console.error('Erro de rede ao excluir a mensagem:', error);
     }
   };
-  
+
 
   const handleEditarMensagem = (index) => {
     const mensagemParaEditar = mensagens[index];
@@ -113,12 +116,12 @@ function GerenciarMensagens() {
           </thead>
           <tbody>
             {mensagensFiltradas.map((mensagem, index) => (
-              <tr key={index} className="border-b">
+              <tr key={mensagem.id} className="border-b">
                 <td className="py-3 px-4 text-gray-800">{mensagem.nome}</td>
                 <td className="py-3 px-4 text-indigo-500 truncate">{mensagem.mensagem}</td>
                 <td className="py-3 px-4 flex justify-center space-x-4">
                   <button
-                    onClick={() => handleExcluirMensagem(index)}
+                    onClick={() => handleExcluirMensagem(mensagem.id)}  // Agora passando o ID
                     className="text-red-500 font-semibold hover:text-red-600 transition-colors"
                   >
                     Excluir
