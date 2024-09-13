@@ -4,13 +4,13 @@ export default function Register() {
             <div className="box-register">
                 <form id="register-form" autoComplete="off" method="post">
                     <h1>Cadastro</h1>
-                    
+
                     <div className="inputBox">
                         <input type="text" required="required" />
                         <span>Nome Completo</span>
                         <i></i>
                     </div>
-                    
+
                     <div className="inputBox">
                         <input type="email" required="required" />
                         <span>Email</span>
@@ -22,7 +22,7 @@ export default function Register() {
                         <span>CPF</span>
                         <i></i>
                     </div>
-                    
+
                     <div className="inputBox">
                         <input type="password" required="required" />
                         <span>Senha</span>

@@ -1,4 +1,4 @@
-export default function Backups(){
+export default function Backups() {
     return (
         <div>
             Backups

@@ -2,27 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
-.box-login{
+.box-login {
 	position: relative;
 	width: 380px;
 	height: 420px;
 	background: #1c1c1c;
 	border-radius: 8px;
-	border: 1.5px solid #ff9800; /* Borda laranja fixa */
+	border: 1.5px solid #ff9800;
+	/* Borda laranja fixa */
 	overflow: hidden;
 }
 
-.box-register{
+.box-register {
 	position: relative;
 	width: 380px;
 	height: 620px;
 	background: #1c1c1c;
 	border-radius: 8px;
-	border: 1.5px solid #ff9800; /* Borda laranja fixa */
+	border: 1.5px solid #ff9800;
+	/* Borda laranja fixa */
 	overflow: hidden;
 }
 
-form{
+form {
 	position: absolute;
 	inset: 2px;
 	background: #28292d;
@@ -33,20 +35,20 @@ form{
 	flex-direction: column;
 }
 
-h1{
+h1 {
 	color: #ff9800;
 	font-weight: 500;
 	text-align: center;
 	letter-spacing: 0.1em;
 }
 
-.inputBox{
+.inputBox {
 	position: relative;
 	width: 300px;
 	margin-top: 35px;
 }
 
-.inputBox input{
+.inputBox input {
 	position: relative;
 	width: 100%;
 	padding: 20px 10px 10px;
@@ -61,7 +63,7 @@ h1{
 	z-index: 10;
 }
 
-.inputBox span{
+.inputBox span {
 	position: absolute;
 	left: 0;
 	padding: 20px 0px 10px;
@@ -72,14 +74,14 @@ h1{
 	transition: 0.5s;
 }
 
-.inputBox input:valid ~ span,
-.inputBox input:focus ~ span{
+.inputBox input:valid~span,
+.inputBox input:focus~span {
 	color: #ff9800;
 	transform: translateX(0px) translateY(-34px);
 	font-size: 0.75em;
 }
 
-.inputBox i{
+.inputBox i {
 	position: absolute;
 	left: 0;
 	bottom: 0;
@@ -93,29 +95,29 @@ h1{
 	z-index: 9;
 }
 
-.inputBox input:valid ~ i,
-.inputBox input:focus ~ i{
+.inputBox input:valid~i,
+.inputBox input:focus~i {
 	height: 44px;
 }
 
-.links{
+.links {
 	display: flex;
 	justify-content: space-between;
 }
 
-.links a{
+.links a {
 	margin: 10px 0;
 	font-size: 0.75em;
 	color: #8f8f8f;
 	text-decoration: beige;
 }
 
-.links a:hover, 
-.links a:nth-child(2){
+.links a:hover,
+.links a:nth-child(2) {
 	color: #ff9800;
 }
 
-input[type="submit"]{
+input[type="submit"] {
 	border: none;
 	outline: none;
 	padding: 11px 25px;
@@ -127,7 +129,7 @@ input[type="submit"]{
 	margin-top: 10px;
 }
 
-input[type="submit"]:active{
+input[type="submit"]:active {
 	opacity: 0.8;
 }
 
