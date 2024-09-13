@@ -47,12 +47,12 @@ function GerenciarFunis() {
           placeholder="Nome do funil"
           value={novoFunil.nome}
           onChange={(e) => setNovoFunil({ ...novoFunil, nome: e.target.value })}
-          className="w-full p-3 border text-black border-gray-300 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
+          className="w-full p-3 border text-black border-gray-400 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
         />
         <select
           value={novoFunil.tipo}
           onChange={(e) => setNovoFunil({ ...novoFunil, tipo: e.target.value })}
-          className="w-full p-3 border text-black border-gray-300 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
+          className="w-full p-3 border text-black border-gray-400 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
         >
           <option value="">Selecione o tipo de arquivo</option>
           <option value="mensagem">Mensagem</option>
@@ -66,7 +66,7 @@ function GerenciarFunis() {
             const arquivoSelecionado = arquivosImportados.find(arquivo => arquivo.nome === e.target.value);
             setNovoFunil({ ...novoFunil, arquivo: arquivoSelecionado });
           }}
-          className="w-full p-3 border text-black border-gray-300 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
+          className="w-full p-3 border text-black border-gray-400 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
         >
           <option value="">Selecione o arquivo</option>
           {arquivosImportados.filter(arquivo => arquivo.tipo === novoFunil.tipo).map((arquivo, index) => (
@@ -92,7 +92,7 @@ function GerenciarFunis() {
           placeholder="Pesquisar"
           value={termoBusca}
           onChange={(e) => setTermoBusca(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-md mb-6 focus:outline-none focus:border-indigo-500"
+          className="w-full p-3 border border-gray-400 rounded-md mb-6 focus:outline-none focus:border-indigo-500"
         />
 
         <table className="w-full bg-white shadow-lg rounded-lg">

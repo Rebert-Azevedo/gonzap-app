@@ -9,8 +9,11 @@ function GerenciarMensagens() {
 
   const handleAdicionarMensagem = async () => {
     if (novaMensagem.nome && novaMensagem.mensagem) {
-      let response = await fetch('http://localhost:8000', {
-        method: 'POST',
+      const method = editandoIndex !== null ? 'PUT' : 'POST';
+      const url = editandoIndex !== null ? `http://localhost:8000/api/mensagens/${mensagens[editandoIndex].id}` : 'http://localhost:8000';
+      console.log(url)
+      let response = await fetch(url, {
+        method: method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -22,12 +25,21 @@ function GerenciarMensagens() {
 
       if (response.ok) {
         const data = await response.json();
-        // Inclui o ID retornado pelo backend na mensagem adicionada
-        const mensagemComId = { id: data.id, nome: novaMensagem.nome, mensagem: novaMensagem.mensagem };
-        setMensagens([...mensagens, mensagemComId]);
+        if (editandoIndex !== null) {
+          // Atualiza a mensagem existente
+          const mensagensAtualizadas = mensagens.map((msg, index) =>
+            index === editandoIndex ? { ...msg, nome: novaMensagem.nome, mensagem: novaMensagem.mensagem } : msg
+          );
+          setMensagens(mensagensAtualizadas);
+          setEditandoIndex(null);
+        } else {
+          // Adiciona nova mensagem
+          const mensagemComId = { id: data.id, nome: novaMensagem.nome, mensagem: novaMensagem.mensagem };
+          setMensagens([...mensagens, mensagemComId]);
+        }
         setNovaMensagem({ nome: '', mensagem: '' });
       } else {
-        console.error('Erro ao adicionar a mensagem:', response);
+        console.error('Erro ao adicionar/atualizar a mensagem:', response);
       }
     }
   };
@@ -54,9 +66,10 @@ function GerenciarMensagens() {
 
   const handleEditarMensagem = (index) => {
     const mensagemParaEditar = mensagens[index];
-    setNovaMensagem(mensagemParaEditar); // Preenche os campos com a mensagem que está sendo editada
+    setNovaMensagem({ nome: mensagemParaEditar.nome, mensagem: mensagemParaEditar.mensagem }); // Preenche apenas os campos nome e mensagem
     setEditandoIndex(index); // Armazena o índice da mensagem que está sendo editada
   };
+
 
   const mensagensFiltradas = mensagens.filter(mensagem =>
     mensagem.nome.toLowerCase().includes(termoBusca.toLowerCase())
@@ -74,15 +87,16 @@ function GerenciarMensagens() {
           placeholder="Nome da mensagem"
           value={novaMensagem.nome}
           onChange={(e) => setNovaMensagem({ ...novaMensagem, nome: e.target.value })}
-          className="w-full p-3 border text-black border-gray-300 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
+          className="w-full p-3 border text-black border-gray-400 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
         />
-        <input
+        <textarea
           id="mensagem-texto"
           type="text"
           placeholder="Escreva sua mensagem"
           value={novaMensagem.mensagem}
           onChange={(e) => setNovaMensagem({ ...novaMensagem, mensagem: e.target.value })}
-          className="w-full p-3 border text-black border-gray-300 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
+          className="w-full p-3 border text-black border-gray-400 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
+          style={{ height: '140px', resize: 'none' }}
         />
 
         <button
@@ -103,7 +117,7 @@ function GerenciarMensagens() {
           placeholder="Pesquisar"
           value={termoBusca}
           onChange={(e) => setTermoBusca(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-md mb-6 focus:outline-none focus:border-indigo-500"
+          className="w-full p-3 border border-gray-400 rounded-md mb-6 focus:outline-none focus:border-indigo-500"
         />
 
         <table className="w-full bg-white shadow-lg rounded-lg">

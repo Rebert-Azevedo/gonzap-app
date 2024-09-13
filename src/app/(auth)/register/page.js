@@ -18,8 +18,8 @@ export default function Register() {
                     </div>
 
                     <div className="inputBox">
-                        <input type="text" required="required" />
-                        <span>CPF</span>
+                        <input type="number" required="required" />
+                        <span>Telefone</span>
                         <i></i>
                     </div>
 

@@ -13,3 +13,5 @@ connectDb.connect(
 
     }
 )
+
+module.exports = connectDb

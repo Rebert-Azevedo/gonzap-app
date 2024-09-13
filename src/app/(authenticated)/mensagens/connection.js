@@ -1,5 +1,5 @@
 import connectDb from '../../../controllers/db/database';
-/*
+
 export default async function handler(req, res) {
   const db = await connectDb;
 
@@ -22,4 +22,3 @@ export default async function handler(req, res) {
     res.status(405).json({ message: 'Método não permitido' });
   }
 }
-*/

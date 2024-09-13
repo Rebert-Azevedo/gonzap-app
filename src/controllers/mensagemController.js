@@ -1,3 +1,4 @@
+/*
 const Mensagem = require('../models/mensagemModel');
 
 const adicionarMensagem = async (req, res) => {
@@ -23,3 +24,4 @@ const excluirMensagem = async (req, res) => {
 };
 
 module.exports = { adicionarMensagem, excluirMensagem };
+*/
