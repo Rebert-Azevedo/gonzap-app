@@ -1,4 +1,4 @@
-export default function Gatilhos(){
+export default function Gatilhos() {
     return (
         <div>
             Gatilhos
