@@ -10,8 +10,10 @@ function GerenciarMensagens() {
   const handleAdicionarMensagem = async () => {
     if (novaMensagem.nome && novaMensagem.mensagem) {
       const method = editandoIndex !== null ? 'PUT' : 'POST';
-      const url = editandoIndex !== null ? `http://localhost:8000/api/mensagens/${mensagens[editandoIndex].id}` : 'http://localhost:8000';
-      console.log(url)
+      const url = editandoIndex !== null
+        ? `http://localhost:8000/api/mensagens/${mensagens[editandoIndex].id}`  // Usa o ID da mensagem para edição
+        : 'http://localhost:8000';
+
       let response = await fetch(url, {
         method: method,
         headers: {
@@ -42,7 +44,7 @@ function GerenciarMensagens() {
         console.error('Erro ao adicionar/atualizar a mensagem:', response);
       }
     }
-  };
+  }; 
 
   const handleExcluirMensagem = async (idParaExcluir) => {
     try {
@@ -51,7 +53,6 @@ function GerenciarMensagens() {
       });
 
       if (response.ok) {
-        // Atualiza a lista de mensagens no frontend removendo a mensagem com o ID correspondente
         const novasMensagens = mensagens.filter(mensagem => mensagem.id !== idParaExcluir);
         setMensagens(novasMensagens);
       } else {
@@ -65,10 +66,10 @@ function GerenciarMensagens() {
 
 
   const handleEditarMensagem = (index) => {
-    const mensagemParaEditar = mensagens[index];
-    setNovaMensagem({ nome: mensagemParaEditar.nome, mensagem: mensagemParaEditar.mensagem }); // Preenche apenas os campos nome e mensagem
-    setEditandoIndex(index); // Armazena o índice da mensagem que está sendo editada
-  };
+    const mensagemParaEditar = mensagens[index];  // Localiza a mensagem pelo índice
+    setNovaMensagem(mensagemParaEditar);  // Preenche o formulário com a mensagem existente
+    setEditandoIndex(index);  // Define o índice da mensagem que está sendo editada
+  }
 
 
   const mensagensFiltradas = mensagens.filter(mensagem =>
@@ -135,13 +136,13 @@ function GerenciarMensagens() {
                 <td className="py-3 px-4 text-indigo-500 truncate">{mensagem.mensagem}</td>
                 <td className="py-3 px-4 flex justify-center space-x-4">
                   <button
-                    onClick={() => handleExcluirMensagem(mensagem.id)}  // Agora passando o ID
+                    onClick={() => handleExcluirMensagem(mensagem.id)}  // Passa o ID da mensagem ao clicar em "Excluir"
                     className="text-red-500 font-semibold hover:text-red-600 transition-colors"
                   >
                     Excluir
                   </button>
                   <button
-                    onClick={() => handleEditarMensagem(index)}
+                    onClick={() => handleEditarMensagem(index)}  // Passa o índice da mensagem ao clicar em "Editar"
                     className="text-blue-500 font-semibold hover:text-blue-600 transition-colors"
                   >
                     Editar
