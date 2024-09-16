@@ -1,22 +1,53 @@
-//API
+//CONEXÃO COM O API
 const conect = require('../server');
 const express = require('express');
 const cors = require('cors');
 const app = express();
+
+const bodyParser = require('body-parser');
+const crypto = require('crypto'); // Para hashear a senha
 
 app.use(cors({
   origin: 'http://localhost:3000'
 }))
 
 app.use(express.json())
-
+app.use(cors());
 app.listen(8000, () => {
   console.log('servidor express(Railway)')
 })
 
+app.use(bodyParser.json());
+
+
+// Rota para o login
+app.post('http://localhost:8000/api/login', (req, res) => {
+    const { email, senha } = req.body;
+
+    // Hash da senha enviada pelo usuário
+    const hashedPassword = crypto.createHash('sha256').update(senha).digest('hex');
+
+    // Verificação das credenciais
+    if (email === validEmail && hashedPassword === validPasswordHash) {
+        res.json({ message: 'Login bem-sucedido!' });
+    } else {
+        res.status(401).json({ message: 'Email ou senha incorretos.' });
+    }
+});
+
+
+
+
+
 // Rota para incluir uma mensagem
 app.post('/', async function (request, response) {
   let [query] = await conect.promise().query(`insert into mensagens (nome,mensagem) values ('${request.body.nome}','${request.body.mensagem}' )`)
+  response.send(request.body)
+})
+
+// Rota para incluir um novo usuário
+app.post('/api/register', async function (request, response){
+  let [query] = await conect.promise().query(`insert into usuarios (nome,email,telefone,senha) values ('${request.body.nome}','${request.body.email}','${request.body.telefone}','${request.body.senha}' )`)
   response.send(request.body)
 })
 
