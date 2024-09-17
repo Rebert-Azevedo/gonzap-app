@@ -9,8 +9,7 @@ const connectDb = Mysql.createConnection(
 connectDb.connect(
     function (err) {
         if (err) throw err;
-        console.log('Conexão estabelecida com sucesso')
-
+        console.log('Conectado com sucesso. Servidor RAILWAY')
     }
 )
 
