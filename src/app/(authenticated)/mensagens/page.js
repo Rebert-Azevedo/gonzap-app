@@ -48,11 +48,13 @@ function GerenciarMensagens() {
 
   const handleExcluirMensagem = async (idParaExcluir) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/mensagens/${idParaExcluir}`, {
+      // Atualizando a URL para apontar para a porta correta (8000)
+      const response = await fetch(`http://localhost:8000/api/mensagens/${idParaExcluir}`, {
         method: 'DELETE',
       });
-
+  
       if (response.ok) {
+        // Atualiza o estado de mensagens no frontend após a exclusão bem-sucedida
         const novasMensagens = mensagens.filter(mensagem => mensagem.id !== idParaExcluir);
         setMensagens(novasMensagens);
       } else {
@@ -63,6 +65,7 @@ function GerenciarMensagens() {
       console.error('Erro de rede ao excluir a mensagem:', error);
     }
   };
+  
 
 
   const handleEditarMensagem = (index) => {

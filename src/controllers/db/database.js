@@ -1,4 +1,3 @@
-// Importações e Configurações
 const conect = require('../server');
 const express = require('express');
 const cors = require('cors');
@@ -18,7 +17,6 @@ app.listen(8000, () => {
 });
 
 
-
 /* Rotas para manipulação de usuário*/
 
 // Rota para incluir um novo usuário
@@ -26,7 +24,6 @@ app.post('/api/register', async function (req, res){
   let [query] = await conect.promise().query(`insert into usuarios (nome,email,telefone,senha) values ('${req.body.nome}','${req.body.email}','${req.body.telefone}','${req.body.senha}' )`)
   res.send(req.body)
 })
-
 // Rota para o login
 app.post('/api/login', async (req, res) => {
     const { email, senha } = req.body;
@@ -41,9 +38,25 @@ app.post('/api/login', async (req, res) => {
 
 // Rota para incluir uma mensagem
 app.post('/', async function (req, res) {
-  let [query] = await conect.promise().query(`insert into mensagens (nome,mensagem) values ('${req.body.nome}','${req.body.mensagem}' )`)
-  res.send(req.body)
-})
+  try {
+    // Insere a mensagem no banco de dados e captura o resultado
+    let [query] = await conect.promise().query(
+      `insert into mensagens (nome, mensagem) values (?, ?)`,
+      [req.body.nome, req.body.mensagem]  // Usando prepared statements
+    );
+
+    // Retorna o corpo da requisição junto com o ID gerado
+    res.send({
+      id: query.insertId,  // Captura o ID gerado
+      nome: req.body.nome,
+      mensagem: req.body.mensagem
+    });
+  } catch (error) {
+    console.error('Erro ao inserir mensagem:', error);
+    res.status(500).send({ error: 'Erro ao inserir mensagem' });
+  }
+});
+
 
 
 // Rota para editar uma mensagem
@@ -56,11 +69,11 @@ app.put('/api/mensagens/:id', async (req, res) => {
     return res.status(400).json({ error: 'Nome e mensagem são obrigatórios.' });
   }
 
-  const sql = `UPDATE mensagens SET nome = ${nome}, mensagem = ${mensagem} WHERE id = ${id}`;
-
   try {
-    // Usa conect.promise().execute() para lidar com a query e parâmetros
-    const [result] = await conect.promise().execute(sql);
+    const [result] = await conect.promise().execute(
+      `UPDATE mensagens SET nome = ?, mensagem = ? WHERE id = ?`,
+      [nome, mensagem, id]
+    );
     // Verifica se a mensagem com o ID fornecido foi encontrada
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Mensagem não encontrada.' });
@@ -69,31 +82,38 @@ app.put('/api/mensagens/:id', async (req, res) => {
     return res.status(200).json({ message: 'Mensagem atualizada com sucesso!' });
   } catch (err) {
     console.error('Erro ao atualizar a mensagem:', err);
-    // Retorna um erro genérico de servidor caso algo dê errado
     return res.status(500).json({ error: 'Erro ao atualizar a mensagem.', details: err });
   }
 });
 
 
+
 // Rota para excluir uma mensagem
-app.delete('/api/mensagens/:id', async (request, response) => {
-  const { id } = request.params;  // Obtém o ID dos parâmetros da URL
-  const sql = 'DELETE FROM mensagens WHERE id = ?';
+app.delete('/api/mensagens/:id', async (req, res) => {
+  const { id } = req.params;  // Obtém o ID dos parâmetros da URL
 
   try {
-    const [result] = await db.promise().execute(sql, [id]);
+    // Garante que o ID seja um número
+    if (isNaN(id)) {
+      return res.status(400).json({ message: 'ID inválido!' });
+    }
+
+    // Faz a exclusão usando prepared statement
+    const [result] = await conect.promise().execute(
+      'DELETE FROM mensagens WHERE id = ?',
+      [id]
+    );
 
     // Verifica se houve alguma linha afetada (i.e., se o ID existia)
     if (result.affectedRows === 0) {
-      return response.status(404).json({ message: 'Mensagem não encontrada!' });
+      return res.status(404).json({ message: 'Mensagem não encontrada!' });
     }
 
     // Retorna sucesso se a mensagem foi excluída
-    return response.status(200).json({ message: 'Mensagem excluída com sucesso!' });
+    return res.status(200).json({ message: 'Mensagem excluída com sucesso!' });
   } catch (err) {
-    // Captura e retorna qualquer erro ocorrido durante o processo
-    return response.status(500).json({ error: 'Erro ao excluir a mensagem', details: err });
+    console.error('Erro ao excluir mensagem:', err);
+    return res.status(500).json({ error: 'Erro ao excluir a mensagem', details: err });
   }
 });
 /* Final das rotas para manipulação de mensagens*/
-
