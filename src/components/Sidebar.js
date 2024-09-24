@@ -1,9 +1,17 @@
-import Link from "next/link"
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Sidebar() {
     return (
         <aside className="min-h-screen w-1/4 bg-slate-800 p-4">
-            <h1 className="text-2xl font-bold text-orange-500 mb-4">GONZAP</h1>
+            <div className="flex items-center mb-4">
+                <Image
+                    src="/Gonzap-Logo.png"  // Verifique se o caminho está correto
+                    alt="Gonzap Logo"
+                    width={50}
+                    height={50}
+                />
+            </div>
             <p className="text-sm mb-8">VERSÃO: 1.0.0</p>
             <ul className="space-y-4">
                 <li>
@@ -57,5 +65,5 @@ export default function Sidebar() {
                 </li>
             </ul>
         </aside>
-    )
+    );
 }
