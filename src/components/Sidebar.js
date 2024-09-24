@@ -6,8 +6,7 @@ export default function Sidebar() {
         <aside className="min-h-screen w-1/4 bg-slate-800 p-4">
             <div className="flex items-center mb-4">
                 <Image
-                    src="/Gonzap-Logo.png"  // Verifique se o caminho está correto
-                    alt="Gonzap Logo"
+                    src="/public/LogoGonzap.png" 
                     width={50}
                     height={50}
                 />
