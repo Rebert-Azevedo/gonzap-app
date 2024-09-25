@@ -1,14 +1,10 @@
-'use client';
+'use client'
 import { useState } from 'react';
-import { useRouter } from 'next/router'; // Para redirecionamento
 import SHA256 from 'crypto-js/sha256'; 
-import { useUser } from '@/components/UserContext'; // Importando o UserContext para salvar o usuário
 
 export default function Login() {
-    const { setUser } = useUser(); // Pega a função para definir o usuário no contexto
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
-    const router = useRouter(); // Hook do Next.js para redirecionamento
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -31,16 +27,14 @@ export default function Login() {
             const data = await response.json();
 
             if (response.ok) {
-                // Atualizando o usuário logado no contexto
-                setUser({ name: data.name, email: data.email });
-
                 alert('Login realizado com sucesso!');
-                router.push('/dashboard'); // Redireciona para o dashboard
+                window.location.href = '/dashboard'; // Redirecionamento
             } else {
                 alert('Credenciais incorretas: ' + data.message);
             }
         } catch (error) {
             console.error('Erro ao verificar o login:', error);
+                
         }
     };
 
