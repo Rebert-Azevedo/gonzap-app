@@ -1,11 +1,15 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function GerenciarMensagens() {
   const [mensagens, setMensagens] = useState([]);
   const [novaMensagem, setNovaMensagem] = useState({ nome: '', mensagem: '' });
   const [termoBusca, setTermoBusca] = useState('');
   const [editandoIndex, setEditandoIndex] = useState(null); // Adiciona um estado para controlar o índice da mensagem que está sendo editada
+
+  useEffect(() => {
+    exibeMensagem(); // Carrega as mensagens assim que o componente é montado
+  }, []);
 
   const handleAdicionarMensagem = async () => {
     if (novaMensagem.nome && novaMensagem.mensagem) {
@@ -44,17 +48,15 @@ function GerenciarMensagens() {
         console.error('Erro ao adicionar/atualizar a mensagem:', response);
       }
     }
-  }; 
+  };
 
   const handleExcluirMensagem = async (idParaExcluir) => {
     try {
-      // Atualizando a URL para apontar para a porta correta (8000)
       const response = await fetch(`http://localhost:8000/api/mensagens/${idParaExcluir}`, {
         method: 'DELETE',
       });
-  
+
       if (response.ok) {
-        // Atualiza o estado de mensagens no frontend após a exclusão bem-sucedida
         const novasMensagens = mensagens.filter(mensagem => mensagem.id !== idParaExcluir);
         setMensagens(novasMensagens);
       } else {
@@ -65,8 +67,6 @@ function GerenciarMensagens() {
       console.error('Erro de rede ao excluir a mensagem:', error);
     }
   };
-  
-
 
   const handleEditarMensagem = (index) => {
     const mensagemParaEditar = mensagens[index];  // Localiza a mensagem pelo índice
@@ -74,6 +74,17 @@ function GerenciarMensagens() {
     setEditandoIndex(index);  // Define o índice da mensagem que está sendo editada
   }
 
+  const exibeMensagem = async () => {
+    let request = await fetch('http://localhost:8000/grid').then(response => response.json());
+
+    const mensagemComId = request.map((item) => ({
+      id: item.id,
+      nome: item.nome,
+      mensagem: item.mensagem
+    }));
+
+    setMensagens(mensagemComId); // Atualiza o estado com todas as mensagens de uma vez
+  };
 
   const mensagensFiltradas = mensagens.filter(mensagem =>
     mensagem.nome.toLowerCase().includes(termoBusca.toLowerCase())
@@ -133,6 +144,7 @@ function GerenciarMensagens() {
             </tr>
           </thead>
           <tbody>
+
             {mensagensFiltradas.map((mensagem, index) => (
               <tr key={mensagem.id} className="border-b">
                 <td className="py-3 px-4 text-gray-800">{mensagem.nome}</td>
