@@ -36,6 +36,15 @@ app.post('/api/login', async (req, res) => {
 
 /* Rotas para manipulação de mensagens*/
 
+// Rota para mostrar as mensagens no grid
+app.get('/grid', async function (req, res) {
+  let [query] = await conect.promise().query(`select * from mensagens`)
+  
+  res.send(query);
+})
+
+
+
 // Rota para incluir uma mensagem
 app.post('/', async function (req, res) {
   try {

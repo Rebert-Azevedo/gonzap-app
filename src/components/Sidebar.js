@@ -5,8 +5,8 @@ export default function Sidebar() {
     return (
         <aside className="min-h-screen w-1/4 bg-slate-800 p-4">
             <div className="flex items-center mb-4">
-                <Image
-                    src="/public/LogoGonzap.png" 
+                <img
+                    src="../../public/logo.png" 
                     width={50}
                     height={50}
                 />
