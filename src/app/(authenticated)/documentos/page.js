@@ -83,7 +83,7 @@ function GerenciarDocumentos() {
           placeholder="Pesquisar"
           value={termoBusca}
           onChange={(e) => setTermoBusca(e.target.value)}
-          className="w-full p-3 border border-gray-400 rounded-md mb-6 focus:outline-none focus:border-indigo-500"
+          className="w-full p-3 border text-black border-gray-400 rounded-md mb-6 focus:outline-none focus:border-indigo-500"
         />
 
         <table className="w-full bg-white shadow-lg rounded-lg">
