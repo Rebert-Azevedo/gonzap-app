@@ -75,7 +75,7 @@ function GerenciarMensagens() {
   }
 
   const exibeMensagem = async () => {
-    let request = await fetch('http://localhost:8000/grid').then(response => response.json());
+    let request = await fetch('http://localhost:8000/gridMensagem').then(response => response.json());
 
     const mensagemComId = request.map((item) => ({
       id: item.id,

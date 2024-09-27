@@ -1,44 +1,90 @@
-'use client'
-import React, { useState } from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 
 function GerenciarAudios() {
   const [audios, setAudios] = useState([]);
-  const [novoAudio, setNovoAudio] = useState({ nome: '', arquivo: null });
+  const [novoAudio, setNovoAudio] = useState({ nome: '', audio: null });
   const [termoBusca, setTermoBusca] = useState('');
 
-  const handleAdicionarAudio = () => {
-    // Cria um novo objeto de áudio com URL temporária para reprodução
-    const novoAudioComURL = {
-      nome: novoAudio.nome,
-      arquivo: novoAudio.arquivo,
-      audioURL: URL.createObjectURL(novoAudio.arquivo) // Cria URL temporária para reprodução
-    };
-    setAudios([...audios, novoAudioComURL]);
-    setNovoAudio({ nome: '', arquivo: null });
+  useEffect(() => {
+    exibeAudio(); // Carrega os áudios assim que o componente é montado
+  }, []);
+
+  const handleAdicionarAudio = async () => {
+    if (novoAudio.nome && novoAudio.audio) {
+      console.log('Nome:', novoAudio.nome); // Verifique se está preenchido
+      console.log('Audio:', novoAudio.audio); // Verifique se o audio está correto
+  
+      const formData = new FormData();
+      formData.append('nome', novoAudio.nome);
+      formData.append('audio', novoAudio.audio); // Este campo deve corresponder ao que está no backend
+  
+      try {
+        let response = await fetch('http://localhost:8000/api/audios', {
+          method: 'POST',
+          body: formData,
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          const audioComId = { id: data.id, nome: novoAudio.nome, audioURL: URL.createObjectURL(novoAudio.audio) };
+          setAudios((prevAudios) => [...prevAudios, audioComId]); // Atualiza o estado corretamente
+          setNovoAudio({ nome: '', audio: null });
+        } else {
+          const errorData = await response.json(); // Capture o corpo da resposta de erro
+          console.error('Erro ao adicionar o áudio:', errorData);
+        }
+      } catch (error) {
+        console.error('Erro de rede ao adicionar o áudio:', error);
+      }
+    }
+  };
+  
+  
+
+  const exibeAudio = async () => {
+    try {
+      let response = await fetch('http://localhost:8000/gridAudios');
+
+      if (!response.ok) {
+        const errorData = await response.json(); // Capture o corpo da resposta de erro
+        throw new Error(errorData.message || 'Erro ao buscar os áudios');
+      }
+
+      let request = await response.json();
+      console.log(request); // Verifique a estrutura da resposta
+
+      const audioComId = request.map((item) => ({
+        id: item.id,
+        nome: item.nome,
+        audioURL: item.audio,
+      }));
+
+      console.log('Áudios recebidos:', audioComId);
+      setAudios(audioComId); // Atualiza o estado com todos os áudios de uma vez
+    } catch (error) {
+      console.error('Erro ao exibir áudios:', error);
+    }
   };
 
-  const handleExcluirAudio = (index) => {
-    const novosAudios = [...audios];
-    URL.revokeObjectURL(novosAudios[index].audioURL); // Libera a URL do objeto quando o áudio é removido
-    novosAudios.splice(index, 1);
-    setAudios(novosAudios);
-  };
+  const handleExcluirAudio = async (idParaExcluir) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/audios/${idParaExcluir}`, {
+        method: 'DELETE',
+      });
 
-  const handleEditarAudio = (index, novoNome, novoArquivo) => {
-    const novosAudios = [...audios];
-    // Se o arquivo mudar, cria uma nova URL
-    const novoAudioComURL = {
-      nome: novoNome,
-      arquivo: novoArquivo,
-      audioURL: novoArquivo ? URL.createObjectURL(novoArquivo) : novosAudios[index].audioURL
-    };
-    novosAudios[index] = novoAudioComURL;
-    setAudios(novosAudios);
+      if (response.ok) {
+        const novosAudios = audios.filter(audio => audio.id !== idParaExcluir);
+        setAudios(novosAudios);
+      } else {
+        const errorData = await response.json();
+        console.error('Erro ao excluir o áudio:', errorData.message || response.statusText);
+      }
+    } catch (error) {
+      console.error('Erro de rede ao excluir o áudio:', error);
+    }
   };
-
-  const audiosFiltrados = audios.filter(audio =>
-    audio.nome.toLowerCase().includes(termoBusca.toLowerCase())
-  );
 
   return (
     <div className="flex flex-col items-center w-full px-6 py-4 min-h-screen">
@@ -61,7 +107,7 @@ function GerenciarAudios() {
           onChange={(e) => {
             const file = e.target.files[0];
             if (file) {
-              setNovoAudio({ ...novoAudio, arquivo: file });
+              setNovoAudio({ ...novoAudio, audio: file });
             }
           }}
           className="hidden" // escondendo o input padrão
@@ -76,14 +122,13 @@ function GerenciarAudios() {
           </label>
         </div>
 
-        {/* Botão de adicionar com controle de desabilitado */}
         <button
           onClick={handleAdicionarAudio}
-          className={`w-full py-2 rounded-md font-semibold transition-colors ${!novoAudio.nome || !novoAudio.arquivo
+          className={`w-full py-2 rounded-md font-semibold transition-colors ${!novoAudio.nome || !novoAudio.audio
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
             : "bg-indigo-500 text-white hover:bg-indigo-600"
             }`}
-          disabled={!novoAudio.nome || !novoAudio.arquivo} // desabilita o botão se o nome ou o áudio estiverem vazios
+          disabled={!novoAudio.nome || !novoAudio.audio}
         >
           Adicionar
         </button>
@@ -107,35 +152,31 @@ function GerenciarAudios() {
             </tr>
           </thead>
           <tbody>
-            {audiosFiltrados.map((audio, index) => (
-              <tr key={index} className="border-b">
-                <td className="py-3 px-4 text-gray-800">{audio.nome}</td>
-                <td className="py-3 px-4 text-indigo-500 truncate">
-                  {audio.audioURL ? (
-                    <audio controls>
-                      <source src={audio.audioURL} type="audio/mpeg" />
-                      Seu navegador não suporta o elemento de áudio.
-                    </audio>
-                  ) : (
-                    'Sem áudio'
-                  )}
-                </td>
-                <td className="py-3 px-4 flex justify-center space-x-4">
-                  <button
-                    onClick={() => handleExcluirAudio(index)}
-                    className="text-red-500 font-semibold hover:text-red-600 transition-colors"
-                  >
-                    Excluir
-                  </button>
-                  <button
-                    onClick={() => handleEditarAudio(index, audio.nome, audio.arquivo)}
-                    className="text-blue-500 font-semibold hover:text-blue-600 transition-colors"
-                  >
-                    Editar
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {audios
+              .filter(audio => audio.nome.toLowerCase().includes(termoBusca.toLowerCase())) // Filtra os áudios pela busca
+              .map((audio) => (
+                <tr key={audio.id} className="border-b">
+                  <td className="py-3 px-4 text-gray-800">{audio.nome}</td>
+                  <td className="py-3 px-4 text-indigo-500 truncate">
+                    {audio.audioURL ? (
+                      <audio controls>
+                        <source src={audio.audioURL} type="audio/mpeg" />
+                        Seu navegador não suporta o elemento de áudio.
+                      </audio>
+                    ) : (
+                      'Sem áudio'
+                    )}
+                  </td>
+                  <td className="py-3 px-4 flex justify-center space-x-4">
+                    <button
+                      onClick={() => handleExcluirAudio(audio.id)}  // Usar o ID em vez do index
+                      className="text-red-500 font-semibold hover:text-red-600 transition-colors"
+                    >
+                      Excluir
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

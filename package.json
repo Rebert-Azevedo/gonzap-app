@@ -9,11 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
     "express": "^4.21.0",
     "gonzap-app": "file:",
     "md5": "^2.3.0",
+    "multer": "^1.4.5-lts.1",
     "mysql2": "^3.11.2",
     "next": "^14.2.12",
     "react": "^18",

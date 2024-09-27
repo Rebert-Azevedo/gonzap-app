@@ -3,6 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
+const multer = require('multer');
+
+
 // Middleware CORS
 app.use(cors({
   origin: 'http://localhost:3000'
@@ -20,15 +23,15 @@ app.listen(8000, () => {
 /* Rotas para manipulação de usuário*/
 
 // Rota para incluir um novo usuário
-app.post('/api/register', async function (req, res){
+app.post('/api/register', async function (req, res) {
   let [query] = await conect.promise().query(`insert into usuarios (nome,email,telefone,senha) values ('${req.body.nome}','${req.body.email}','${req.body.telefone}','${req.body.senha}' )`)
   res.send(req.body)
 })
 // Rota para o login
 app.post('/api/login', async (req, res) => {
-    const { email, senha } = req.body;
-    let [query] = await conect.promise().query(`select * from usuarios where email = '${email}' and senha = '${senha}'`)
-    res.send(query)
+  const { email, senha } = req.body;
+  let [query] = await conect.promise().query(`select * from usuarios where email = '${email}' and senha = '${senha}'`)
+  res.send(query)
 });
 /* Final das rotas para manipulação de usuário*/
 
@@ -37,11 +40,19 @@ app.post('/api/login', async (req, res) => {
 /* Rotas para manipulação de mensagens*/
 
 // Rota para mostrar as mensagens no grid
-app.get('/grid', async function (req, res) {
+app.get('/gridMensagem', async function (req, res) {
   let [query] = await conect.promise().query(`select * from mensagens`)
-  
+
   res.send(query);
 })
+
+// Rota para mostrar os áudios no grid
+app.get('/gridAudios', async function (req, res) {
+  let [query] = await conect.promise().query(`select * from audios`)
+
+  res.send(query);
+})
+
 
 
 
@@ -126,3 +137,63 @@ app.delete('/api/mensagens/:id', async (req, res) => {
   }
 });
 /* Final das rotas para manipulação de mensagens*/
+
+
+
+const storage = multer.memoryStorage(); // Armazena o arquivo em memória (ou pode usar diskStorage para salvar no disco)
+const upload = multer({ storage: storage });
+
+// Rota para adicionar áudio
+app.post('/api/audios', upload.single('audio'), async function (req, res) { // Altere 'arquivo' para 'audio'
+  try {
+    const nomeAudio = req.body.nome;
+    const arquivoAudio = req.file.buffer; // O arquivo de áudio está no buffer (em memória)
+
+    // Insere o nome e o arquivo de áudio (ou caminho, dependendo do armazenamento) no banco de dados
+    let [query] = await conect.promise().query('INSERT INTO audios (nome, audio) VALUES (?, ?)', [
+      nomeAudio,
+      arquivoAudio
+    ]);
+
+    // Retorna o corpo da requisição junto com o ID gerado
+    res.send({
+      id: query.insertId,  // Captura o ID gerado
+      nome: nomeAudio,
+      audio: arquivoAudio  // Ou caminho se salvar no disco
+    });
+  } catch (error) {
+    console.error('Erro ao inserir áudio:', error);
+    res.status(500).send({ error: 'Erro ao inserir áudio' });
+  }
+});
+
+
+
+// Rota para excluir um audio
+app.delete('/api/audios/:id', async (req, res) => {
+  const { id } = req.params;  // Obtém o ID dos parâmetros da URL
+
+  try {
+    // Garante que o ID seja um número
+    if (isNaN(id)) {
+      return res.status(400).json({ message: 'ID inválido!' });
+    }
+
+    // Faz a exclusão usando prepared statement
+    const [result] = await conect.promise().execute(
+      'DELETE FROM audios WHERE id = ?',
+      [id]
+    );
+
+    // Verifica se houve alguma linha afetada (i.e., se o ID existia)
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Áudio não encontrado!' });
+    }
+
+    // Retorna sucesso se a mensagem foi excluída
+    return res.status(200).json({ message: 'Áudio excluída com sucesso!' });
+  } catch (err) {
+    console.error('Erro ao excluir mensagem:', err);
+    return res.status(500).json({ error: 'Erro ao excluir o áudio', details: err });
+  }
+});
