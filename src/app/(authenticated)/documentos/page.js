@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useState } from 'react';
 
 function GerenciarDocumentos() {
@@ -6,9 +6,41 @@ function GerenciarDocumentos() {
   const [novoDocumento, setNovoDocumento] = useState({ nome: '', arquivo: null });
   const [termoBusca, setTermoBusca] = useState('');
 
-  const handleAdicionarDocumento = () => {
-    setDocumentos([...documentos, novoDocumento]);
-    setNovoDocumento({ nome: '', arquivo: null });
+  const handleAdicionarDocumento = async () => {
+    // Corrigido para usar 'arquivo' em vez de 'documento'
+    if (novoDocumento.nome && novoDocumento.arquivo) {
+      console.log('Nome:', novoDocumento.nome);
+      console.log('Arquivo:', novoDocumento.arquivo);
+
+      const formData = new FormData();
+      formData.append('nome', novoDocumento.nome);
+      formData.append('documento', novoDocumento.arquivo); // Certifique-se de que o nome está correto
+
+      try {
+        let response = await fetch('http://localhost:8000/api/documentos', {
+          method: 'POST',
+          body: formData,
+        });
+
+        console.log('Resposta do servidor:', response); // Log da resposta do servidor para debug
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Dados retornados:', data); // Log dos dados retornados
+
+          const documentoComId = { id: data.id, nome: novoDocumento.nome, documento: novoDocumento.arquivo.name }; // Exibindo o nome do arquivo
+          setDocumentos((prevDocumentos) => [...prevDocumentos, documentoComId]);
+          setNovoDocumento({ nome: '', arquivo: null }); // Resetando o formulário
+        } else {
+          const errorData = await response.json();
+          console.error('Erro ao adicionar o documento:', errorData);
+        }
+      } catch (error) {
+        console.error('Erro de rede ao adicionar o documento:', error);
+      }
+    } else {
+      console.error('Nome ou arquivo do documento não fornecido.');
+    }
   };
 
   const handleExcluirDocumento = (index) => {
@@ -17,18 +49,12 @@ function GerenciarDocumentos() {
     setDocumentos(novosDocumentos);
   };
 
-  const handleEditarDocumento = (index, novoNome, novoArquivo) => {
-    const novosDocumentos = [...documentos];
-    novosDocumentos[index] = { nome: novoNome, arquivo: novoArquivo };
-    setDocumentos(novosDocumentos);
-  };
-
   const documentosFiltrados = documentos.filter(documento =>
     documento.nome.toLowerCase().includes(termoBusca.toLowerCase())
   );
 
   return (
-    <div className="flex flex-col items-center w-full px-6 py-4  min-h-screen">
+    <div className="flex flex-col items-center w-full px-6 py-4 min-h-screen">
       <div className="mb-10">
         <h2 className="text-4xl font-bold text-gray-800">Gerenciar Documentos</h2>
       </div>
@@ -64,7 +90,6 @@ function GerenciarDocumentos() {
           </label>
         </div>
 
-        {/* Botão de adicionar com controle de desabilitado */}
         <button
           onClick={handleAdicionarDocumento}
           className={`w-full py-2 rounded-md font-semibold transition-colors ${!novoDocumento.nome || !novoDocumento.arquivo
@@ -98,19 +123,13 @@ function GerenciarDocumentos() {
             {documentosFiltrados.map((documento, index) => (
               <tr key={index} className="border-b">
                 <td className="py-3 px-4 text-gray-800">{documento.nome}</td>
-                <td className="py-3 px-4 text-indigo-500 truncate">{documento.arquivo ? documento.arquivo.name : ''}</td>
+                <td className="py-3 px-4 text-indigo-500 truncate">{documento.documento}</td>
                 <td className="py-3 px-4 flex justify-center space-x-4">
                   <button
                     onClick={() => handleExcluirDocumento(index)}
                     className="text-red-500 font-semibold hover:text-red-600 transition-colors"
                   >
                     Excluir
-                  </button>
-                  <button
-                    onClick={() => handleEditarDocumento(index, documento.nome, documento.arquivo)}
-                    className="text-blue-500 font-semibold hover:text-blue-600 transition-colors"
-                  >
-                    Editar
                   </button>
                 </td>
               </tr>
