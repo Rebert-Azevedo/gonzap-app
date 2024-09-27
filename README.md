@@ -9,27 +9,31 @@ Dashboard Completo: Acesse todas as suas funcionalidades em um painel intuitivo 
 Relatórios Detalhados: Gere relatórios para monitorar o uso e desempenho da extensão.
 Instalação Para instalar o Gonzap no Google Chrome, siga os passos abaixo:
 
-Clone este repositório: git clone https://github.com/Rebert-Azevedo/Gonzap.git
+1. Clone este repositório: git clone https://github.com/Rebert-Azevedo/Gonzap.git
 
-Abra o Google Chrome e vá para chrome://extensions/.
+2. Abra o Google Chrome e vá para chrome://extensions/.
 
-Ative o Modo de Desenvolvedor no canto superior direito.
+3. Ative o Modo de Desenvolvedor no canto superior direito.
 
-Clique em Carregar sem compactação e selecione a pasta onde você clonou o repositório. A extensão agora estará disponível no seu navegador!
+4. Clique em Carregar sem compactação e selecione a pasta onde você clonou o repositório. A extensão agora estará disponível no seu navegador!
 
 Após a instalação, abra o WhatsApp Web no Google Chrome. Você verá o ícone do Gonzap na barra de ferramentas do navegador. Clique nele para acessar o painel de controle e utilizar as funcionalidades da extensão.
 
 Contribuição Contribuições são bem-vindas! Se você tiver sugestões, correções de bugs ou novas funcionalidades, sinta-se à vontade para abrir um issue ou enviar um pull request.
 
-Fork este repositório
+1. Fork este repositório
 
-Crie um branch para seu feature (git checkout -b feature/nova-feature)
-Comprometa suas mudanças (git commit -m 'Adição nova feature')
-Enviar para o branch (git push origin feature/nova-feature)
-Abra um pull request
+2. Crie um branch para seu feature (git checkout -b feature/nova-feature)
+
+3. Comprometa suas mudanças (git commit -m 'Adição nova feature')
+
+4. Enviar para o branch (git push origin feature/nova-feature)
+
+5. Abra um pull request
+
 Licença Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE para mais detalhes.
 
-Contato Rebert_azvd1 = Instagram Rebert Azevedo - Repositório LinkedIn: https://github.com/Rebert-Azevedo/Gonzap
+Contato: (74) 98139-6860 = Instagram: Rebert_azvd1 - LinkedIn: https://www.linkedin.com/in/rebert-azevedo-a72888250/
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
