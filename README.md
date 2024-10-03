@@ -9,7 +9,7 @@ Dashboard Completo: Acesse todas as suas funcionalidades em um painel intuitivo 
 Relatórios Detalhados: Gere relatórios para monitorar o uso e desempenho da extensão.
 Instalação Para instalar o Gonzap no Google Chrome, siga os passos abaixo:
 
-1. Clone este repositório: git clone https://github.com/Rebert-Azevedo/Gonzap.git
+1. Clone este repositório: git clone [https://github.com/Rebert-Azevedo/gonzap-app]
 
 2. Abra o Google Chrome e vá para chrome://extensions/.
 
