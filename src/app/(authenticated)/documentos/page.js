@@ -1,20 +1,23 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function GerenciarDocumentos() {
   const [documentos, setDocumentos] = useState([]);
   const [novoDocumento, setNovoDocumento] = useState({ nome: '', arquivo: null });
   const [termoBusca, setTermoBusca] = useState('');
 
+  useEffect(() => {
+    exibeDocumentos(); // Carrega os documentos assim que o componente é montado
+  }, []);
+
   const handleAdicionarDocumento = async () => {
-    // Corrigido para usar 'arquivo' em vez de 'documento'
     if (novoDocumento.nome && novoDocumento.arquivo) {
       console.log('Nome:', novoDocumento.nome);
       console.log('Arquivo:', novoDocumento.arquivo);
 
       const formData = new FormData();
       formData.append('nome', novoDocumento.nome);
-      formData.append('documento', novoDocumento.arquivo); // Certifique-se de que o nome está correto
+      formData.append('documento', novoDocumento.arquivo);
 
       try {
         let response = await fetch('http://localhost:8000/api/documentos', {
@@ -22,15 +25,19 @@ function GerenciarDocumentos() {
           body: formData,
         });
 
-        console.log('Resposta do servidor:', response); // Log da resposta do servidor para debug
+        console.log('Resposta do servidor:', response);
 
         if (response.ok) {
           const data = await response.json();
-          console.log('Dados retornados:', data); // Log dos dados retornados
+          console.log('Dados retornados:', data);
 
-          const documentoComId = { id: data.id, nome: novoDocumento.nome, documento: novoDocumento.arquivo.name }; // Exibindo o nome do arquivo
+          const documentoComId = {
+            id: data.id,
+            nome: novoDocumento.nome,
+            documento: novoDocumento.arquivo.name // Pegue o nome do arquivo corretamente
+          };
           setDocumentos((prevDocumentos) => [...prevDocumentos, documentoComId]);
-          setNovoDocumento({ nome: '', arquivo: null }); // Resetando o formulário
+          setNovoDocumento({ nome: '', arquivo: null });
         } else {
           const errorData = await response.json();
           console.error('Erro ao adicionar o documento:', errorData);
@@ -43,10 +50,39 @@ function GerenciarDocumentos() {
     }
   };
 
-  const handleExcluirDocumento = (index) => {
-    const novosDocumentos = [...documentos];
-    novosDocumentos.splice(index, 1);
-    setDocumentos(novosDocumentos);
+  const handleExcluirDocumento = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/documentos/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setDocumentos(documentos.filter(doc => doc.id !== id));
+        console.log('Documento excluído com sucesso.');
+      } else {
+        console.error('Erro ao excluir o documento.');
+      }
+    } catch (error) {
+      console.error('Erro de rede ao excluir o documento:', error);
+    }
+  };
+
+  const exibeDocumentos = async () => {
+    try {
+      let request = await fetch('http://localhost:8000/gridDocumentos');
+      let data = await request.json();
+      console.log('Documentos recebidos:', data);
+
+      const documentosComId = data.map((item) => ({
+        id: item.id,
+        nome: item.nome,
+        documento: item.documento.name ? item.documento.name : item.documento // Garante que `documento` seja uma string
+      }));
+
+      setDocumentos(documentosComId);
+    } catch (error) {
+      console.error('Erro ao buscar documentos:', error);
+    }
   };
 
   const documentosFiltrados = documentos.filter(documento =>
@@ -70,15 +106,15 @@ function GerenciarDocumentos() {
         <input
           id="documento-upload"
           type="file"
-          accept=".pdf,.doc,.docx,.txt" // Altere conforme os tipos de arquivos permitidos
+          accept=".pdf,.doc,.docx,.txt"
           onChange={(e) => {
-            const file = e.target.files[0]; // Seleciona o primeiro arquivo escolhido
+            const file = e.target.files[0];
             if (file) {
               setNovoDocumento({ ...novoDocumento, arquivo: file });
               console.log('Arquivo selecionado:', file.name);
             }
           }}
-          className="hidden" // Escondendo o input padrão se estiver usando um botão personalizado
+          className="hidden"
         />
 
         <div className="w-full flex justify-center mb-4">
@@ -96,7 +132,7 @@ function GerenciarDocumentos() {
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
             : "bg-indigo-500 text-white hover:bg-indigo-600"
             }`}
-          disabled={!novoDocumento.nome || !novoDocumento.arquivo} // desabilita o botão se o nome ou o arquivo estiverem vazios
+          disabled={!novoDocumento.nome || !novoDocumento.arquivo}
         >
           Adicionar
         </button>
@@ -120,13 +156,13 @@ function GerenciarDocumentos() {
             </tr>
           </thead>
           <tbody>
-            {documentosFiltrados.map((documento, index) => (
-              <tr key={index} className="border-b">
+            {documentosFiltrados.map((documento) => (
+              <tr key={documento.id} className="border-b">
                 <td className="py-3 px-4 text-gray-800">{documento.nome}</td>
-                <td className="py-3 px-4 text-indigo-500 truncate">{documento.documento}</td>
+                <td className="py-3 px-4 text-indigo-500 truncate">{typeof documento.documento === 'string' ? documento.documento : 'Documento inválido'}</td> {/* Certifique-se de que `documento` é uma string */}
                 <td className="py-3 px-4 flex justify-center space-x-4">
                   <button
-                    onClick={() => handleExcluirDocumento(index)}
+                    onClick={() => handleExcluirDocumento(documento.id)}
                     className="text-red-500 font-semibold hover:text-red-600 transition-colors"
                   >
                     Excluir

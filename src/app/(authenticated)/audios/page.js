@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useState, useEffect } from 'react';
 
 function GerenciarAudios() {
@@ -7,9 +6,27 @@ function GerenciarAudios() {
   const [novoAudio, setNovoAudio] = useState({ nome: '', audio: null });
   const [termoBusca, setTermoBusca] = useState('');
 
+  // Função para exibir áudios
+  const exibeAudio = async () => {
+    try {
+      let response = await fetch('http://localhost:8000/gridAudios');
+      if (response.ok) {
+        let data = await response.json();
+        const audiosComUrls = data.map((audio) => ({
+          id: audio.id,
+          nome: audio.nome,
+          audioURL: `data:audio/mpeg;base64,${Buffer.from(audio.audio).toString('base64')}`,
+        }));
+        setAudios(audiosComUrls);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar áudios:', error);
+    }
+  };
+
   useEffect(() => {
-    exibeAudio(); // Carrega os áudios assim que o componente é montado
-  }, []);
+    exibeAudio(); // Chama a função para exibir os áudios
+  }, []); // Este useEffect chama exibeAudio uma vez ao montar o componente.
 
   const handleAdicionarAudio = async () => {
     if (novoAudio.nome && novoAudio.audio) {
@@ -38,33 +55,6 @@ function GerenciarAudios() {
       } catch (error) {
         console.error('Erro de rede ao adicionar o áudio:', error);
       }
-    }
-  };
-  
-  
-
-  const exibeAudio = async () => {
-    try {
-      let response = await fetch('http://localhost:8000/gridAudios');
-
-      if (!response.ok) {
-        const errorData = await response.json(); // Capture o corpo da resposta de erro
-        throw new Error(errorData.message || 'Erro ao buscar os áudios');
-      }
-
-      let request = await response.json();
-      console.log(request); // Verifique a estrutura da resposta
-
-      const audioComId = request.map((item) => ({
-        id: item.id,
-        nome: item.nome,
-        audioURL: item.audio,
-      }));
-
-      console.log('Áudios recebidos:', audioComId);
-      setAudios(audioComId); // Atualiza o estado com todos os áudios de uma vez
-    } catch (error) {
-      console.error('Erro ao exibir áudios:', error);
     }
   };
 

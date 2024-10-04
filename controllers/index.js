@@ -3,6 +3,7 @@ const { app, con } = require('./server');
 require('./routes/audios');
 require('./routes/documentos');
 require('./routes/mensagens');
+require('./routes/dashboard');
 
 // Rota para incluir um novo usuário
 app.post('/api/register', async function (req, res) {
