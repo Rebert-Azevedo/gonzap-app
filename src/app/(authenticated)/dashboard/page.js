@@ -4,7 +4,7 @@ export default function Dashboard() {
     return (
         <div className="">
             {/* Main Content */}
-            <main className="flex-1 p-6">
+            <main className="ml-[18%] w-[82.5%] flex-1 p-6">
                 {/* Dashboard Content */}
                 <section>
                     <h3 className="text-2xl mb-4 text-zinc-600">Bem-vindo ao Gonzap Dashboard!</h3>

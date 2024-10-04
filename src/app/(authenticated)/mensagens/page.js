@@ -91,7 +91,7 @@ function GerenciarMensagens() {
   );
 
   return (
-    <div className="flex flex-col items-center w-full px-6 py-4 min-h-screen">
+    <div className="ml-[18%] w-[82.5%] flex flex-col items-center px-6 py-4 min-h-screen bg-gray-100">
       <div className="mb-10">
         <h2 className="text-4xl font-bold text-gray-800">Gerenciar Mensagens</h2>
       </div>

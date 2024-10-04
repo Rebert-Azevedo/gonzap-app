@@ -4,7 +4,7 @@ export default function Header() {
             <h2 className="text-lg">Olá, Rebert!</h2>
             <div className="flex items-center">
                 <p className="mr-4">Dúvidas ao utilizar o painel de controle?</p>
-                <button className="bg-orange-800 text-white px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-300">Fale com nosso suporte</button>
+                <button className="bg-orange-800 text-white px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-300 transition-transform transform hover:scale-105 active:scale-95">Fale com nosso suporte</button>
             </div>
         </header>
     )
