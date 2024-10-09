@@ -1,6 +1,5 @@
 'use client'
 import { useState } from 'react';
-import SHA256 from 'crypto-js/sha256'; 
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -8,9 +7,6 @@ export default function Login() {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-
-        // Hashing da senha antes de enviar
-        const hashedPassword = SHA256(senha).toString();
 
         try {
             const response = await fetch('http://localhost:8000/api/login', {
@@ -20,21 +16,25 @@ export default function Login() {
                 },
                 body: JSON.stringify({ 
                     email: email,
-                    senha: hashedPassword // Envia a senha com hash
+                    senha: senha // Envia a senha diretamente
                 })
             });
 
-            const data = await response.json();
-
+            // Verificar o status da resposta
             if (response.ok) {
+                const data = await response.json();
+                // Armazena o token JWT localmente
+                localStorage.setItem('token', data.token);
                 alert('Login realizado com sucesso!');
                 window.location.href = '/dashboard'; // Redirecionamento
             } else {
-                alert('Credenciais incorretas: ' + data.message);
+                const errorData = await response.json();
+                alert('Erro de autenticação: ' + errorData.message);
             }
+
         } catch (error) {
             console.error('Erro ao verificar o login:', error);
-                
+            alert('Erro ao tentar login. Tente novamente mais tarde.');
         }
     };
 
