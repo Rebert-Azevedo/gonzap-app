@@ -8,6 +8,9 @@ function GerenciarDocumentos() {
 
   useEffect(() => {
     exibeDocumentos(); // Carrega os documentos assim que o componente é montado
+    if (!sessionStorage.getItem('token')) {
+      window.location.href = '/login';
+    }
   }, []);
 
   const handleAdicionarDocumento = async () => {

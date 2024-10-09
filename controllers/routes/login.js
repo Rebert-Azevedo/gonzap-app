@@ -6,4 +6,3 @@ app.post('/api/login', async (req, res) => {
     let [query] = await con.promise().query(`select * from usuarios where email = '${email}' and senha = '${senha}'`)
     res.send(query)
 });
-  

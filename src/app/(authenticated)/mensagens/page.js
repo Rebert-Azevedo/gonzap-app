@@ -9,6 +9,9 @@ function GerenciarMensagens() {
 
   useEffect(() => {
     exibeMensagem(); // Carrega as mensagens assim que o componente é montado
+    if (!sessionStorage.getItem('token')) {
+      window.location.href = '/login';
+    }
   }, []);
 
   const handleAdicionarMensagem = async () => {

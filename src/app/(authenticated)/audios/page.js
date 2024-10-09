@@ -26,23 +26,26 @@ function GerenciarAudios() {
 
   useEffect(() => {
     exibeAudio(); // Chama a função para exibir os áudios
+    if (!sessionStorage.getItem('token')) {
+      window.location.href = '/login';
+    }
   }, []); // Este useEffect chama exibeAudio uma vez ao montar o componente.
 
   const handleAdicionarAudio = async () => {
     if (novoAudio.nome && novoAudio.audio) {
       console.log('Nome:', novoAudio.nome); // Verifique se está preenchido
       console.log('Audio:', novoAudio.audio); // Verifique se o audio está correto
-  
+
       const formData = new FormData();
       formData.append('nome', novoAudio.nome);
       formData.append('audio', novoAudio.audio); // Este campo deve corresponder ao que está no backend
-  
+
       try {
         let response = await fetch('http://localhost:8000/api/audios', {
           method: 'POST',
           body: formData,
         });
-  
+
         if (response.ok) {
           const data = await response.json();
           const audioComId = { id: data.id, nome: novoAudio.nome, audioURL: URL.createObjectURL(novoAudio.audio) };

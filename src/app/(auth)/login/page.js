@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react';
+import SHA256 from 'crypto-js/sha256'; // Certifique-se de instalar crypto-js: npm install crypto-js
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -8,28 +9,29 @@ export default function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
 
+        // Hashing da senha usando SHA-256
+        const hashedPassword = SHA256(senha).toString(); // Corrigido para usar a variável correta
+
         try {
             const response = await fetch('http://localhost:8000/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     email: email,
-                    senha: senha // Envia a senha diretamente
+                    senha: hashedPassword // Corrigido para usar o hash gerado
                 })
             });
 
-            // Verificar o status da resposta
-            if (response.ok) {
-                const data = await response.json();
-                // Armazena o token JWT localmente
-                localStorage.setItem('token', data.token);
-                alert('Login realizado com sucesso!');
-                window.location.href = '/dashboard'; // Redirecionamento
+            const data = await response.json();
+
+            if (!data || data.length === 0) {
+                alert('Erro ao tentar login.');
             } else {
-                const errorData = await response.json();
-                alert('Erro de autenticação: ' + errorData.message);
+                alert('Login!!');
+                window.location.href = '/dashboard';
+                sessionStorage.setItem('token', data[0].id);
             }
 
         } catch (error) {
@@ -44,28 +46,28 @@ export default function Login() {
                 <form id="login-form" autoComplete="off" onSubmit={handleLogin}>
                     <h1>Login</h1>
                     <div className="inputBox">
-                        <input 
-                            type="email" 
-                            required 
-                            value={email} 
-                            onChange={(e) => setEmail(e.target.value)} 
+                        <input
+                            type="email"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                         <span>Email</span>
                         <i></i>
                     </div>
                     <div className="inputBox">
-                        <input 
-                            type="password" 
-                            required 
-                            value={senha} 
-                            onChange={(e) => setSenha(e.target.value)} 
+                        <input
+                            type="password"
+                            required
+                            value={senha}
+                            onChange={(e) => setSenha(e.target.value)}
                         />
                         <span>Password</span>
                         <i></i>
                     </div>
                     <div className="links">
-                        <a href="#">Forgot Password?</a>
-                        <a href="/register">Signup</a>
+                        <a href="#">Recuperar senha</a>
+                        <a href="/register">Criar usuário</a>
                     </div>
                     <input type="submit" value="Login" />
                 </form>

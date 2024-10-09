@@ -10,8 +10,11 @@ export default function Dashboard() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        if (!sessionStorage.getItem('token')) {
+            window.location.href = '/login';
+        }
         const fetchCounts = async () => {
-            setIsLoading(true); 
+            setIsLoading(true);
 
             try {
                 // Função para buscar contagem de mensagens
@@ -24,7 +27,7 @@ export default function Dashboard() {
 
                 // Função para buscar contagem de áudios
                 const fetchAudiosCount = async () => {
-                    const response = await fetch('/api/gridAudios'); 
+                    const response = await fetch('/api/gridAudios');
                     if (!response.ok) throw new Error('Erro ao buscar audios');
                     const data = await response.json();
                     setAudiosCount(data.count); // Acessa a chave correta
@@ -32,7 +35,7 @@ export default function Dashboard() {
 
                 // Função para buscar contagem de documentos
                 const fetchDocumentosCount = async () => {
-                    const response = await fetch('/api/gridMensagem'); 
+                    const response = await fetch('/api/gridMensagem');
                     if (!response.ok) throw new Error('Erro ao buscar documentos');
                     const data = await response.json();
                     setDocumentosCount(data.count); // Acessa a chave correta
@@ -40,7 +43,7 @@ export default function Dashboard() {
 
                 // Função para buscar contagem de funis
                 const fetchFunisCount = async () => {
-                    const response = await fetch('/api/gridMensagem'); 
+                    const response = await fetch('/api/gridMensagem');
                     if (!response.ok) throw new Error('Erro ao buscar funis');
                     const data = await response.json();
                     setFunisCount(data.count); // Acessa a chave correta
@@ -48,7 +51,7 @@ export default function Dashboard() {
 
                 // Função para buscar contagem de gatilhos
                 const fetchGatilhosCount = async () => {
-                    const response = await fetch('/api/gridMensagem'); 
+                    const response = await fetch('/api/gridMensagem');
                     if (!response.ok) throw new Error('Erro ao buscar gatilhos');
                     const data = await response.json();
                     setGatilhosCount(data.count); // Acessa a chave correta
