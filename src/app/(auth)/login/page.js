@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { useState } from 'react';
 import SHA256 from 'crypto-js/sha256'; // Certifique-se de instalar crypto-js: npm install crypto-js
 
@@ -10,7 +10,7 @@ export default function Login() {
         e.preventDefault();
 
         // Hashing da senha usando SHA-256
-        const hashedPassword = SHA256(senha).toString(); // Corrigido para usar a variável correta
+        const hashedPassword = SHA256(senha).toString(); 
 
         try {
             const response = await fetch('http://localhost:8000/api/login', {
@@ -20,7 +20,7 @@ export default function Login() {
                 },
                 body: JSON.stringify({
                     email: email,
-                    senha: hashedPassword // Corrigido para usar o hash gerado
+                    senha: hashedPassword 
                 })
             });
 
@@ -29,9 +29,12 @@ export default function Login() {
             if (!data || data.length === 0) {
                 alert('Erro ao tentar login.');
             } else {
-                alert('Login!!');
-                window.location.href = '/dashboard';
-                sessionStorage.setItem('token', data[0].id);
+                // Armazena o token e o e-mail do usuário no sessionStorage
+                sessionStorage.setItem('token', data[0].id);  // Armazena o token do login
+                sessionStorage.setItem('email', email);       // Armazena o e-mail do usuário
+
+                alert('Login bem-sucedido!');
+                window.location.href = '/dashboard'; // Redireciona após o armazenamento
             }
 
         } catch (error) {
