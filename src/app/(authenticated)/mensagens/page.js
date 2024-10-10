@@ -5,10 +5,10 @@ function GerenciarMensagens() {
   const [mensagens, setMensagens] = useState([]);
   const [novaMensagem, setNovaMensagem] = useState({ nome: '', mensagem: '' });
   const [termoBusca, setTermoBusca] = useState('');
-  const [editandoIndex, setEditandoIndex] = useState(null); // Adiciona um estado para controlar o índice da mensagem que está sendo editada
+  const [editandoIndex, setEditandoIndex] = useState(null);
 
   useEffect(() => {
-    exibeMensagem(); // Carrega as mensagens assim que o componente é montado
+    exibeMensagem();
     if (!sessionStorage.getItem('token')) {
       window.location.href = '/login';
     }
@@ -18,7 +18,7 @@ function GerenciarMensagens() {
     if (novaMensagem.nome && novaMensagem.mensagem) {
       const method = editandoIndex !== null ? 'PUT' : 'POST';
       const url = editandoIndex !== null
-        ? `http://localhost:8000/api/mensagens/${mensagens[editandoIndex].id}`  // Usa o ID da mensagem para edição
+        ? `http://localhost:8000/api/mensagens/${mensagens[editandoIndex].id}`
         : 'http://localhost:8000';
 
       let response = await fetch(url, {
@@ -35,14 +35,12 @@ function GerenciarMensagens() {
       if (response.ok) {
         const data = await response.json();
         if (editandoIndex !== null) {
-          // Atualiza a mensagem existente
           const mensagensAtualizadas = mensagens.map((msg, index) =>
             index === editandoIndex ? { ...msg, nome: novaMensagem.nome, mensagem: novaMensagem.mensagem } : msg
           );
           setMensagens(mensagensAtualizadas);
           setEditandoIndex(null);
         } else {
-          // Adiciona nova mensagem
           const mensagemComId = { id: data.id, nome: novaMensagem.nome, mensagem: novaMensagem.mensagem };
           setMensagens([...mensagens, mensagemComId]);
         }
@@ -72,10 +70,10 @@ function GerenciarMensagens() {
   };
 
   const handleEditarMensagem = (index) => {
-    const mensagemParaEditar = mensagens[index];  // Localiza a mensagem pelo índice
-    setNovaMensagem(mensagemParaEditar);  // Preenche o formulário com a mensagem existente
-    setEditandoIndex(index);  // Define o índice da mensagem que está sendo editada
-  }
+    const mensagemParaEditar = mensagens[index];
+    setNovaMensagem(mensagemParaEditar);
+    setEditandoIndex(index);
+  };
 
   const exibeMensagem = async () => {
     let request = await fetch('http://localhost:8000/gridMensagem').then(response => response.json());
@@ -86,7 +84,7 @@ function GerenciarMensagens() {
       mensagem: item.mensagem
     }));
 
-    setMensagens(mensagemComId); // Atualiza o estado com todas as mensagens de uma vez
+    setMensagens(mensagemComId);
   };
 
   const mensagensFiltradas = mensagens.filter(mensagem =>
@@ -109,7 +107,6 @@ function GerenciarMensagens() {
         />
         <textarea
           id="mensagem-texto"
-          type="text"
           placeholder="Escreva sua mensagem"
           value={novaMensagem.mensagem}
           onChange={(e) => setNovaMensagem({ ...novaMensagem, mensagem: e.target.value })}
@@ -147,20 +144,19 @@ function GerenciarMensagens() {
             </tr>
           </thead>
           <tbody>
-
             {mensagensFiltradas.map((mensagem, index) => (
               <tr key={mensagem.id} className="border-b">
                 <td className="py-3 px-4 text-gray-800">{mensagem.nome}</td>
-                <td className="py-3 px-4 text-indigo-500 truncate">{mensagem.mensagem}</td>
+                <td className="py-3 px-4 text-indigo-500 break-all" style={{ maxWidth: '200px' }}>{mensagem.mensagem}</td>
                 <td className="py-3 px-4 flex justify-center space-x-4">
                   <button
-                    onClick={() => handleExcluirMensagem(mensagem.id)}  // Passa o ID da mensagem ao clicar em "Excluir"
+                    onClick={() => handleExcluirMensagem(mensagem.id)}
                     className="text-red-500 font-semibold hover:text-red-600 transition-colors"
                   >
                     Excluir
                   </button>
                   <button
-                    onClick={() => handleEditarMensagem(index)}  // Passa o índice da mensagem ao clicar em "Editar"
+                    onClick={() => handleEditarMensagem(index)}
                     className="text-blue-500 font-semibold hover:text-blue-600 transition-colors"
                   >
                     Editar
