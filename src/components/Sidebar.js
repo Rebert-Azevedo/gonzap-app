@@ -11,39 +11,39 @@ export default function SidebarLayout({ children }) {
                 <p className="text-sm mb-10">VERSÃO: 1.0.0</p>
                 <ul className="space-y-4">
                     <li>
-                        <button className="w-full bg-slate-800 p-2 text-left rounded focus:outline-none focus:ring-2 focus:ring-slate-300 transition-transform transform hover:scale-105 active:scale-95">
-                            <Link href={'/dashboard'}>Início</Link>
-                        </button>
+                        <Link href="/dashboard" className="block w-full bg-slate-800 p-2 text-left rounded focus:outline-none focus:ring-2 focus:ring-slate-300 transition-transform transform hover:scale-105 active:scale-95">
+                            Início
+                        </Link>
                     </li>
                     <li>
-                        <button className="w-full bg-slate-800 p-2 text-left rounded focus:outline-none focus:ring-2 focus:ring-slate-300 transition-transform transform hover:scale-105 active:scale-95">
-                            <Link href={'/mensagens'}>Mensagens</Link>
-                        </button>
+                        <Link href="/mensagens" className="block w-full bg-slate-800 p-2 text-left rounded focus:outline-none focus:ring-2 focus:ring-slate-300 transition-transform transform hover:scale-105 active:scale-95">
+                            Mensagens
+                        </Link>
                     </li>
                     <li>
-                        <button className="w-full bg-slate-800 p-2 text-left rounded focus:outline-none focus:ring-2 focus:ring-slate-300 transition-transform transform hover:scale-105 active:scale-95">
-                            <Link href={'/audios'}>Áudios</Link>
-                        </button>
+                        <Link href="/audios" className="block w-full bg-slate-800 p-2 text-left rounded focus:outline-none focus:ring-2 focus:ring-slate-300 transition-transform transform hover:scale-105 active:scale-95">
+                            Áudios
+                        </Link>
                     </li>
                     <li>
-                        <button className="w-full bg-slate-800 p-2 text-left rounded focus:outline-none focus:ring-2 focus:ring-slate-300 transition-transform transform hover:scale-105 active:scale-95">
-                            <Link href={'/documentos'}>Documentos</Link>
-                        </button>
+                        <Link href="/documentos" className="block w-full bg-slate-800 p-2 text-left rounded focus:outline-none focus:ring-2 focus:ring-slate-300 transition-transform transform hover:scale-105 active:scale-95">
+                            Documentos
+                        </Link>
                     </li>
                     <li>
-                        <button className="w-full bg-slate-800 p-2 text-left rounded focus:outline-none focus:ring-2 focus:ring-slate-300 transition-transform transform hover:scale-105 active:scale-95">
-                            <Link href={'/funis'}>Funis</Link>
-                        </button>
+                        <Link href="/funis" className="block w-full bg-slate-800 p-2 text-left rounded focus:outline-none focus:ring-2 focus:ring-slate-300 transition-transform transform hover:scale-105 active:scale-95">
+                            Funis
+                        </Link>
                     </li>
                     <li>
-                        <button className="w-full bg-slate-800 p-2 text-left rounded focus:outline-none focus:ring-2 focus:ring-slate-300 transition-transform transform hover:scale-105 active:scale-95">
-                            <Link href={'/gatilhos'}>Gatilhos</Link>
-                        </button>
+                        <Link href="/gatilhos" className="block w-full bg-slate-800 p-2 text-left rounded focus:outline-none focus:ring-2 focus:ring-slate-300 transition-transform transform hover:scale-105 active:scale-95">
+                            Gatilhos
+                        </Link>
                     </li>
                     <li>
-                        <button className="w-full bg-slate-800 p-2 text-left rounded focus:outline-none focus:ring-2 focus:ring-slate-300 transition-transform transform hover:scale-105 active:scale-95">
-                            <Link href={'/backups'}>Backups</Link>
-                        </button>
+                        <Link href="/backups" className="block w-full bg-slate-800 p-2 text-left rounded focus:outline-none focus:ring-2 focus:ring-slate-300 transition-transform transform hover:scale-105 active:scale-95">
+                            Backups
+                        </Link>
                     </li>
                 </ul>
             </aside>
