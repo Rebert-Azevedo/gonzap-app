@@ -16,31 +16,42 @@ export default function Register() {
     const [loading, setLoading] = useState(false);
     const [isFormValid, setIsFormValid] = useState(false);
 
+    // Função para validar o formulário
     const validate = () => {
         let tempErrors = {};
         if (!formData.nome) tempErrors.nome = 'Nome é obrigatório';
         if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) tempErrors.email = 'Email inválido';
         if (!formData.telefone || formData.telefone.length < 12) tempErrors.telefone = 'Telefone inválido (mínimo 12 dígitos)';
-        if (formData.senha && formData.senha.length < 8) tempErrors.senha = 'A senha deve ter pelo menos 8 caracteres';
+        if (!formData.senha) {
+            tempErrors.senha = 'A senha é obrigatória';
+        } else if (formData.senha.length < 8) {
+            tempErrors.senha = 'A senha deve ter pelo menos 8 caracteres';
+        }
+        
         setErrors(tempErrors);
-        return Object.keys(tempErrors).length === 0;
+        return Object.keys(tempErrors).length === 0; // Retorna verdadeiro se não houver erros
     };
 
+    // Função para manipular as mudanças nos campos do formulário
     const handleChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
         });
+        // Valida após cada mudança
         validate();
     };
 
+    // useEffect para verificar a validade do formulário sempre que formData mudar
     useEffect(() => {
         setIsFormValid(validate());
     }, [formData]);
 
+    // Função para lidar com o envio do formulário
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Se a validação falhar, interrompe o processo
         if (!isFormValid) return;
 
         setLoading(true);
@@ -60,7 +71,8 @@ export default function Register() {
                 alert('Cadastro realizado com sucesso!');
                 router.push('/login');
             } else {
-                alert('Erro ao cadastrar: ' + data.message);
+                // Atualiza os erros para que sejam exibidos
+                setErrors({ api: data.message });
             }
         } catch (error) {
             console.error('Erro ao enviar os dados:', error);
@@ -133,6 +145,7 @@ export default function Register() {
                     </div>
 
                     <div className="error-messages mt-4">
+                        {/* Exibe erros de validação do formulário */}
                         {Object.values(errors).map((error, index) => (
                             <p key={index} className="text-red-500">{error}</p>
                         ))}
