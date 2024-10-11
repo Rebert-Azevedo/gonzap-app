@@ -1,8 +1,10 @@
-'use client'
-import { useState } from 'react';
-import SHA256 from 'crypto-js/sha256'; // Importa a função de hash
+'use client';
+import { useState, useEffect } from 'react';
+import SHA256 from 'crypto-js/sha256';
+import { useRouter } from 'next/navigation';
 
 export default function Register() {
+    const router = useRouter();
     const [formData, setFormData] = useState({
         nome: '',
         email: '',
@@ -10,45 +12,61 @@ export default function Register() {
         senha: ''
     });
 
+    const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
+    const [isFormValid, setIsFormValid] = useState(false);
+
+    const validate = () => {
+        let tempErrors = {};
+        if (!formData.nome) tempErrors.nome = 'Nome é obrigatório';
+        if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) tempErrors.email = 'Email inválido';
+        if (!formData.telefone || formData.telefone.length < 12) tempErrors.telefone = 'Telefone inválido (mínimo 12 dígitos)';
+        if (formData.senha && formData.senha.length < 8) tempErrors.senha = 'A senha deve ter pelo menos 8 caracteres';
+        setErrors(tempErrors);
+        return Object.keys(tempErrors).length === 0;
+    };
+
     const handleChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
         });
+        validate();
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault(); // Impede o comportamento padrão
+    useEffect(() => {
+        setIsFormValid(validate());
+    }, [formData]);
 
-        // Hashing da senha usando SHA-256
-        const hashedPassword = SHA256(formData.senha).toString(); 
-        
-        // Cria um novo objeto com os dados, substituindo a senha pelo hash
-        const formDataWithHash = {
-            ...formData,
-            senha: hashedPassword
-        };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!isFormValid) return;
+
+        setLoading(true);
+        const hashedPassword = SHA256(formData.senha).toString();
+        const formDataWithHash = { ...formData, senha: hashedPassword };
 
         try {
             const response = await fetch('http://localhost:8000/api/register', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formDataWithHash), // Envia a senha com hash
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formDataWithHash),
             });
 
             const data = await response.json();
 
             if (response.ok) {
                 alert('Cadastro realizado com sucesso!');
-                // Aqui você pode redirecionar o usuário ou limpar o formulário
+                router.push('/login');
             } else {
                 alert('Erro ao cadastrar: ' + data.message);
             }
         } catch (error) {
             console.error('Erro ao enviar os dados:', error);
             alert('Erro ao cadastrar, tente novamente mais tarde.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -59,25 +77,53 @@ export default function Register() {
                     <h1>Cadastro</h1>
 
                     <div className="inputBox">
-                        <input type="text" name="nome" required onChange={handleChange} />
+                        <input
+                            type="text"
+                            name="nome"
+                            value={formData.nome}
+                            onChange={handleChange}
+                            required
+                            className="input"
+                        />
                         <span>Nome Completo</span>
                         <i></i>
                     </div>
 
                     <div className="inputBox">
-                        <input type="email" name="email" required onChange={handleChange} />
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                            className="input"
+                        />
                         <span>Email</span>
                         <i></i>
                     </div>
 
                     <div className="inputBox">
-                        <input type="number" name="telefone" required onChange={handleChange} />
+                        <input
+                            type="tel"
+                            name="telefone"
+                            value={formData.telefone}
+                            onChange={handleChange}
+                            required
+                            className="input"
+                        />
                         <span>Telefone</span>
                         <i></i>
                     </div>
 
                     <div className="inputBox">
-                        <input type="password" name="senha" required onChange={handleChange} />
+                        <input
+                            type="password"
+                            name="senha"
+                            value={formData.senha}
+                            onChange={handleChange}
+                            required
+                            className="input"
+                        />
                         <span>Senha</span>
                         <i></i>
                     </div>
@@ -86,7 +132,18 @@ export default function Register() {
                         <a href="/login">Já tem uma conta? Login</a>
                     </div>
 
-                    <input type="submit" value="Cadastrar" />
+                    <div className="error-messages mt-4">
+                        {Object.values(errors).map((error, index) => (
+                            <p key={index} className="text-red-500">{error}</p>
+                        ))}
+                    </div>
+
+                    <button
+                        type="submit"
+                        className={`btn text-gray-500 ${loading ? 'opacity-50' : (isFormValid ? 'text-orange-500' : 'text-gray-400')} mt-4`}
+                        disabled={loading || !isFormValid}>
+                        {loading ? 'Cadastrando...' : 'Cadastrar'}
+                    </button>
                 </form>
             </div>
         </div>
