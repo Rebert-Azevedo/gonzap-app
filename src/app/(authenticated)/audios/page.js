@@ -5,8 +5,10 @@ function GerenciarAudios() {
   const [audios, setAudios] = useState([]);
   const [novoAudio, setNovoAudio] = useState({ nome: '', audio: null });
   const [termoBusca, setTermoBusca] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [modalAberto, setModalAberto] = useState(false);
+  const [audioParaExcluir, setAudioParaExcluir] = useState(null);
 
-  // Função para exibir áudios
   const exibeAudio = async () => {
     try {
       let response = await fetch('http://localhost:8000/gridAudios');
@@ -25,20 +27,17 @@ function GerenciarAudios() {
   };
 
   useEffect(() => {
-    exibeAudio(); // Chama a função para exibir os áudios
+    exibeAudio();
     if (!sessionStorage.getItem('token')) {
       window.location.href = '/login';
     }
-  }, []); // Este useEffect chama exibeAudio uma vez ao montar o componente.
+}, []);
 
   const handleAdicionarAudio = async () => {
     if (novoAudio.nome && novoAudio.audio) {
-      console.log('Nome:', novoAudio.nome); // Verifique se está preenchido
-      console.log('Audio:', novoAudio.audio); // Verifique se o audio está correto
-
       const formData = new FormData();
       formData.append('nome', novoAudio.nome);
-      formData.append('audio', novoAudio.audio); // Este campo deve corresponder ao que está no backend
+      formData.append('audio', novoAudio.audio);
 
       try {
         let response = await fetch('http://localhost:8000/api/audios', {
@@ -49,10 +48,12 @@ function GerenciarAudios() {
         if (response.ok) {
           const data = await response.json();
           const audioComId = { id: data.id, nome: novoAudio.nome, audioURL: URL.createObjectURL(novoAudio.audio) };
-          setAudios((prevAudios) => [...prevAudios, audioComId]); // Atualiza o estado corretamente
+          setAudios((prevAudios) => [...prevAudios, audioComId]);
           setNovoAudio({ nome: '', audio: null });
+          setFeedback('Áudio adicionado com sucesso!');
+          setTimeout(() => setFeedback(''), 3000);
         } else {
-          const errorData = await response.json(); // Capture o corpo da resposta de erro
+          const errorData = await response.json();
           console.error('Erro ao adicionar o áudio:', errorData);
         }
       } catch (error) {
@@ -70,13 +71,25 @@ function GerenciarAudios() {
       if (response.ok) {
         const novosAudios = audios.filter(audio => audio.id !== idParaExcluir);
         setAudios(novosAudios);
+        setFeedback('Áudio excluído com sucesso!');
+        setTimeout(() => setFeedback(''), 3000);
+        setModalAberto(false);
       } else {
         const errorData = await response.json();
         console.error('Erro ao excluir o áudio:', errorData.message || response.statusText);
-      }
+}
     } catch (error) {
       console.error('Erro de rede ao excluir o áudio:', error);
     }
+  };
+
+  const abrirModalExcluir = (audio) => {
+    setAudioParaExcluir(audio);
+    setModalAberto(true);
+  };
+
+  const cancelarExclusao = () => {
+    setModalAberto(false); // Fecha o modal ao cancelar
   };
 
   return (
@@ -85,14 +98,20 @@ function GerenciarAudios() {
         <h2 className="text-4xl font-bold text-gray-800">Gerenciar Áudios</h2>
       </div>
 
+      {/* Feedback de ação */}
+      {feedback && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-md shadow-md z-10">
+          {feedback}
+        </div>
+      )}
+
       <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
         <input
           type="text"
           placeholder="Nome do áudio"
           value={novoAudio.nome}
           onChange={(e) => setNovoAudio({ ...novoAudio, nome: e.target.value })}
-          className="w-full p-3 border text-black border-gray-400 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
-        />
+          className="w-full p-3 border text-black border-gray-400 rounded-md mb-4 focus:outline-none focus:border-indigo-500"/>
         <input
           id="audio-upload"
           type="file"
@@ -103,14 +122,12 @@ function GerenciarAudios() {
               setNovoAudio({ ...novoAudio, audio: file });
             }
           }}
-          className="hidden" // escondendo o input padrão
-        />
+          className="hidden"/>
 
         <div className="w-full flex justify-center mb-4">
           <label
             htmlFor="audio-upload"
-            className="w-1/2 cursor-pointer bg-indigo-500 text-white py-2 px-4 rounded-md text-center hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-opacity-50"
-          >
+            className="w-1/2 cursor-pointer bg-indigo-500 text-white py-2 px-4 rounded-md text-center hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-opacity-50">
             Selecionar áudio
           </label>
         </div>
@@ -121,8 +138,7 @@ function GerenciarAudios() {
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
             : "bg-indigo-500 text-white hover:bg-indigo-600"
             }`}
-          disabled={!novoAudio.nome || !novoAudio.audio}
-        >
+          disabled={!novoAudio.nome || !novoAudio.audio}>
           Adicionar
         </button>
       </div>
@@ -133,8 +149,7 @@ function GerenciarAudios() {
           placeholder="Pesquisar"
           value={termoBusca}
           onChange={(e) => setTermoBusca(e.target.value)}
-          className="w-full p-3 border text-black border-gray-400 rounded-md mb-6 focus:outline-none focus:border-indigo-500"
-        />
+          className="w-full p-3 border text-black border-gray-400 rounded-md mb-6 focus:outline-none focus:border-indigo-500"/>
 
         <table className="w-full bg-white shadow-lg rounded-lg">
           <thead className="bg-gray-200">
@@ -146,7 +161,7 @@ function GerenciarAudios() {
           </thead>
           <tbody>
             {audios
-              .filter(audio => audio.nome.toLowerCase().includes(termoBusca.toLowerCase())) // Filtra os áudios pela busca
+              .filter(audio => audio.nome.toLowerCase().includes(termoBusca.toLowerCase()))
               .map((audio) => (
                 <tr key={audio.id} className="border-b">
                   <td className="py-3 px-4 text-gray-800">{audio.nome}</td>
@@ -162,9 +177,8 @@ function GerenciarAudios() {
                   </td>
                   <td className="py-3 px-4 flex justify-center space-x-4">
                     <button
-                      onClick={() => handleExcluirAudio(audio.id)}  // Usar o ID em vez do index
-                      className="text-red-500 font-semibold hover:text-red-600 transition-colors"
-                    >
+                      onClick={() => abrirModalExcluir(audio)}
+                      className="text-red-500 font-semibold hover:text-red-600 transition-colors">
                       Excluir
                     </button>
                   </td>
@@ -173,6 +187,31 @@ function GerenciarAudios() {
           </tbody>
         </table>
       </div>
+
+      {/* Modal de confirmação de exclusão */}
+      {modalAberto && (
+        <div className="fixed inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+            <h3 className="text-lg text-black text-center font-bold mb-4">Confirmar Exclusão</h3>
+            <p className="text-black">Tem certeza de que deseja excluir o áudio "{audioParaExcluir?.nome}"?</p>
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={() => {
+                  handleExcluirAudio(audioParaExcluir.id);
+                  setModalAberto(false);
+                }}
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
+                Excluir
+              </button>
+              <button
+                onClick={cancelarExclusao}
+                className="bg-gray-300 text-black px-4 py-2 rounded-md hover:bg-gray-400">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
