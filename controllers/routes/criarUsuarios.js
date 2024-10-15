@@ -1,5 +1,5 @@
 const { app, con } = require('../server');
-const bcrypt = require('bcrypt');
+const SHA256 = require('crypto-js/sha256');
 const { body, validationResult } = require('express-validator');
 
 app.post('/api/register',
@@ -19,7 +19,7 @@ app.post('/api/register',
         const { nome, email, telefone, senha } = req.body;
 
         try {
-            const hashedPassword = await bcrypt.hash(senha, 10);
+            const hashedPassword = SHA256(senha).toString();
 
             const query = `INSERT INTO usuarios (nome, email, telefone, senha) VALUES (?, ?, ?, ?)`;
             const values = [nome, email, telefone, hashedPassword];
