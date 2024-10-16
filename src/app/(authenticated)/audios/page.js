@@ -31,7 +31,7 @@ function GerenciarAudios() {
     if (!sessionStorage.getItem('token')) {
       window.location.href = '/login';
     }
-}, []);
+  }, []);
 
   const handleAdicionarAudio = async () => {
     if (novoAudio.nome && novoAudio.audio) {
@@ -77,7 +77,7 @@ function GerenciarAudios() {
       } else {
         const errorData = await response.json();
         console.error('Erro ao excluir o áudio:', errorData.message || response.statusText);
-}
+      }
     } catch (error) {
       console.error('Erro de rede ao excluir o áudio:', error);
     }
@@ -89,7 +89,7 @@ function GerenciarAudios() {
   };
 
   const cancelarExclusao = () => {
-    setModalAberto(false); // Fecha o modal ao cancelar
+    setModalAberto(false);
   };
 
   return (
@@ -111,7 +111,7 @@ function GerenciarAudios() {
           placeholder="Nome do áudio"
           value={novoAudio.nome}
           onChange={(e) => setNovoAudio({ ...novoAudio, nome: e.target.value })}
-          className="w-full p-3 border text-black border-gray-400 rounded-md mb-4 focus:outline-none focus:border-indigo-500"/>
+          className="w-full p-3 border text-black border-gray-400 rounded-md mb-4 focus:outline-none focus:border-indigo-500" />
         <input
           id="audio-upload"
           type="file"
@@ -122,7 +122,7 @@ function GerenciarAudios() {
               setNovoAudio({ ...novoAudio, audio: file });
             }
           }}
-          className="hidden"/>
+          className="hidden" />
 
         <div className="w-full flex justify-center mb-4">
           <label
@@ -149,12 +149,12 @@ function GerenciarAudios() {
           placeholder="Pesquisar"
           value={termoBusca}
           onChange={(e) => setTermoBusca(e.target.value)}
-          className="w-full p-3 border text-black border-gray-400 rounded-md mb-6 focus:outline-none focus:border-indigo-500"/>
+          className="w-full p-3 border text-black border-gray-400 rounded-md mb-6 focus:outline-none focus:border-indigo-500" />
 
         <table className="w-full bg-white shadow-lg rounded-lg">
           <thead className="bg-gray-200">
             <tr>
-              <th className="py-3 px-4 text-left text-gray-700">Nome</th>
+              <th className="py-3 px-4 text-left text-gray-700 break-all">Nome</th>
               <th className="py-3 px-4 text-left text-gray-700">Áudio</th>
               <th className="py-3 px-4 text-center text-gray-700">Ações</th>
             </tr>

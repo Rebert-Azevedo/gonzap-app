@@ -23,7 +23,7 @@ function GerenciarMensagens() {
       const method = editandoIndex !== null ? 'PUT' : 'POST';
       const url = editandoIndex !== null
         ? `http://localhost:8000/api/mensagens/${mensagens[editandoIndex].id}`
-        : 'http://localhost:8000/api/mensagens';
+        : 'http://localhost:8000/';
 
       let response = await fetch(url, {
         method: method,
@@ -174,7 +174,7 @@ function GerenciarMensagens() {
           <tbody>
             {mensagensFiltradas.map((mensagem, index) => (
               <tr key={mensagem.id} className="border-b">
-                <td className="py-3 px-4 text-gray-800">{mensagem.nome}</td>
+                <td className="py-3 px-4 text-gray-800 break-all">{mensagem.nome}</td>
                 <td className="py-3 px-4 text-gray-800 break-all">{mensagem.mensagem}</td>
                 <td className="py-3 px-4 flex justify-center space-x-4">
                   <button

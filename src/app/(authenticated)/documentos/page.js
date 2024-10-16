@@ -5,9 +5,12 @@ function GerenciarDocumentos() {
   const [documentos, setDocumentos] = useState([]);
   const [novoDocumento, setNovoDocumento] = useState({ nome: '', arquivo: null });
   const [termoBusca, setTermoBusca] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [modalAberto, setModalAberto] = useState(false);
+  const [documentoParaExcluir, setDocumentoParaExcluir] = useState(null);
 
   useEffect(() => {
-    exibeDocumentos(); // Carrega os documentos assim que o componente é montado
+    exibeDocumentos();
     if (!sessionStorage.getItem('token')) {
       window.location.href = '/login';
     }
@@ -15,9 +18,6 @@ function GerenciarDocumentos() {
 
   const handleAdicionarDocumento = async () => {
     if (novoDocumento.nome && novoDocumento.arquivo) {
-      console.log('Nome:', novoDocumento.nome);
-      console.log('Arquivo:', novoDocumento.arquivo);
-
       const formData = new FormData();
       formData.append('nome', novoDocumento.nome);
       formData.append('documento', novoDocumento.arquivo);
@@ -28,28 +28,28 @@ function GerenciarDocumentos() {
           body: formData,
         });
 
-        console.log('Resposta do servidor:', response);
-
         if (response.ok) {
           const data = await response.json();
-          console.log('Dados retornados:', data);
-
           const documentoComId = {
             id: data.id,
             nome: novoDocumento.nome,
-            documento: novoDocumento.arquivo.name // Pegue o nome do arquivo corretamente
+            documento: novoDocumento.arquivo.name,
           };
           setDocumentos((prevDocumentos) => [...prevDocumentos, documentoComId]);
           setNovoDocumento({ nome: '', arquivo: null });
+          setFeedback('Documento adicionado com sucesso!');
+          setTimeout(() => setFeedback(''), 3000);
         } else {
           const errorData = await response.json();
           console.error('Erro ao adicionar o documento:', errorData);
+          setFeedback(`Erro: ${JSON.stringify(errorData)}`);
         }
       } catch (error) {
         console.error('Erro de rede ao adicionar o documento:', error);
+        setFeedback('Erro de rede ao adicionar documento.');
       }
     } else {
-      console.error('Nome ou arquivo do documento não fornecido.');
+      setFeedback('Por favor, forneça um nome e um arquivo para o documento.');
     }
   };
 
@@ -61,12 +61,16 @@ function GerenciarDocumentos() {
 
       if (response.ok) {
         setDocumentos(documentos.filter(doc => doc.id !== id));
-        console.log('Documento excluído com sucesso.');
+        setFeedback('Documento excluído com sucesso!');
+        setTimeout(() => setFeedback(''), 3000);
+        setModalAberto(false);
       } else {
-        console.error('Erro ao excluir o documento.');
+        const errorData = await response.json();
+        setFeedback(JSON.stringify(errorData));
       }
     } catch (error) {
       console.error('Erro de rede ao excluir o documento:', error);
+      setFeedback('Erro de rede ao excluir documento.');
     }
   };
 
@@ -74,14 +78,11 @@ function GerenciarDocumentos() {
     try {
       let request = await fetch('http://localhost:8000/gridDocumentos');
       let data = await request.json();
-      console.log('Documentos recebidos:', data);
-
       const documentosComId = data.map((item) => ({
         id: item.id,
         nome: item.nome,
-        documento: item.documento.name ? item.documento.name : item.documento // Garante que `documento` seja uma string
+        documento: item.nome
       }));
-
       setDocumentos(documentosComId);
     } catch (error) {
       console.error('Erro ao buscar documentos:', error);
@@ -92,11 +93,27 @@ function GerenciarDocumentos() {
     documento.nome.toLowerCase().includes(termoBusca.toLowerCase())
   );
 
+  const abrirModalExcluir = (documento) => {
+    setDocumentoParaExcluir(documento);
+    setModalAberto(true);
+  };
+
+  const cancelarExclusao = () => {
+    setModalAberto(false);
+  };
+
   return (
     <div className="ml-[18%] w-[82.5%] flex flex-col items-center px-6 py-4 min-h-screen">
       <div className="mb-10">
         <h2 className="text-4xl font-bold text-gray-800">Gerenciar Documentos</h2>
       </div>
+
+      {/* Feedback de ação */}
+      {feedback && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-md shadow-md z-10">
+          {feedback}
+        </div>
+      )}
 
       <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
         <input
@@ -104,8 +121,7 @@ function GerenciarDocumentos() {
           placeholder="Nome do documento"
           value={novoDocumento.nome}
           onChange={(e) => setNovoDocumento({ ...novoDocumento, nome: e.target.value })}
-          className="w-full p-3 border text-black border-gray-400 rounded-md mb-4 focus:outline-none focus:border-indigo-500"
-        />
+          className="w-full p-3 border text-black border-gray-400 rounded-md mb-4 focus:outline-none focus:border-indigo-500"/>
         <input
           id="documento-upload"
           type="file"
@@ -114,17 +130,14 @@ function GerenciarDocumentos() {
             const file = e.target.files[0];
             if (file) {
               setNovoDocumento({ ...novoDocumento, arquivo: file });
-              console.log('Arquivo selecionado:', file.name);
             }
           }}
-          className="hidden"
-        />
+          className="hidden"/>
 
         <div className="w-full flex justify-center mb-4">
           <label
             htmlFor="documento-upload"
-            className="w-1/2 cursor-pointer bg-indigo-500 text-white py-2 px-4 rounded-md text-center hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-opacity-50"
-          >
+            className="w-1/2 cursor-pointer bg-indigo-500 text-white py-2 px-4 rounded-md text-center hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-opacity-50">
             Selecionar documento
           </label>
         </div>
@@ -135,8 +148,7 @@ function GerenciarDocumentos() {
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
             : "bg-indigo-500 text-white hover:bg-indigo-600"
             }`}
-          disabled={!novoDocumento.nome || !novoDocumento.arquivo}
-        >
+          disabled={!novoDocumento.nome || !novoDocumento.arquivo}>
           Adicionar
         </button>
       </div>
@@ -147,8 +159,7 @@ function GerenciarDocumentos() {
           placeholder="Pesquisar"
           value={termoBusca}
           onChange={(e) => setTermoBusca(e.target.value)}
-          className="w-full p-3 border text-black border-gray-400 rounded-md mb-6 focus:outline-none focus:border-indigo-500"
-        />
+          className="w-full p-3 border text-black border-gray-400 rounded-md mb-6 focus:outline-none focus:border-indigo-500"/>
 
         <table className="w-full bg-white shadow-lg rounded-lg">
           <thead className="bg-gray-200">
@@ -162,12 +173,11 @@ function GerenciarDocumentos() {
             {documentosFiltrados.map((documento) => (
               <tr key={documento.id} className="border-b">
                 <td className="py-3 px-4 text-gray-800">{documento.nome}</td>
-                <td className="py-3 px-4 text-indigo-500 truncate">{typeof documento.documento === 'string' ? documento.documento : 'Documento inválido'}</td> {/* Certifique-se de que `documento` é uma string */}
+                <td className="py-3 px-4 text-indigo-500 truncate">{documento.documento}</td>
                 <td className="py-3 px-4 flex justify-center space-x-4">
                   <button
-                    onClick={() => handleExcluirDocumento(documento.id)}
-                    className="text-red-500 font-semibold hover:text-red-600 transition-colors"
-                  >
+                    onClick={() => abrirModalExcluir(documento)}
+                    className="text-red-500 font-semibold hover:text-red-600 transition-colors">
                     Excluir
                   </button>
                 </td>
@@ -176,6 +186,30 @@ function GerenciarDocumentos() {
           </tbody>
         </table>
       </div>
+
+      {/* Modal de confirmação de exclusão */}
+      {modalAberto && (
+        <div className="fixed inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+            <h3 className="text-lg text-black text-center font-bold mb-4">Confirmar Exclusão</h3>
+            <p className="text-black">Tem certeza de que deseja excluir o documento "{documentoParaExcluir?.nome}"?</p>
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={() => {
+                  handleExcluirDocumento(documentoParaExcluir.id);
+                }}
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
+                Excluir
+              </button>
+              <button
+                onClick={cancelarExclusao}
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
