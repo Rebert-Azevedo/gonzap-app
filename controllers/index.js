@@ -4,3 +4,4 @@ require('./routes/audios');
 require('./routes/documentos');
 require('./routes/mensagens');
 require('./routes/dashboard');
+require('./routes/funis');
