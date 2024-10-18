@@ -10,7 +10,6 @@ function GerenciarFunis() {
   const arquivosImportados = [
     { nome: 'Mensagem 1', tipo: 'mensagem', arquivo: 'mensagem1.txt' },
     { nome: 'Áudio 1', tipo: 'audio', arquivo: 'audio1.mp3' },
-    { nome: 'Mídia 1', tipo: 'midia', arquivo: 'midia1.mp4' },
     { nome: 'Documento 1', tipo: 'documento', arquivo: 'documento1.pdf' },
   ];
 
