@@ -1,30 +1,40 @@
-const { app, con, upload, s3 } = require('../server');
+const { app, con, s3 } = require('../server');
 require('dotenv').config();
 
-//Dentro da rota de envio do arquivo 
-app.post('/upload/documentos', async (req, res) => {
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() }); // Usando memória para armazenar temporariamente o arquivo
+
+app.post('/upload/documentos', upload.single('documento'), async (req, res) => {
   let documento;
-console.log(req.body)
+  
+  if (!req.file) {
+    return res.status(400).send({ error: 'Nenhum arquivo enviado.' });
+  }
+
   s3.upload({
     Bucket: 'gonzap',
-    Key: 'Teste.pdf',
-    Body: req.body.documento //substitua file pelo nome que colocou ao enviar para o backend
+    Key: req.file.originalname, // Usa o nome original do arquivo
+    Body: req.file.buffer // O arquivo é acessível no buffer em `req.file`
   },
-
-    //KALLBACK;;;
     async (err, data) => {
-      if (err) { res.send({ teste: 'erro' }) }
-      else {
+      if (err) {
+        res.status(500).send({ teste: 'erro', details: err });
+      } else {
         documento = data.Location;
-        let [query] = await con.promise().query('INSERT INTO (nome, documento) documentos VALUES (?, ?)',
-          [req.body.nome, documento]
-        )
-        res.send({ sucesso: query });
-
+        try {
+          let [query] = await con.promise().query(
+            'INSERT INTO documentos (nome, documento) VALUES (?, ?)',
+            [req.body.nome, documento]
+          );
+          res.send({ id: query.insertId, sucesso: 'Documento adicionado com sucesso!' });
+        } catch (dbErr) {
+          res.status(500).send({ error: 'Erro ao inserir no banco de dados', details: dbErr });
+        }
       }
     }
-  )
+  );
 });
+
 
 
 

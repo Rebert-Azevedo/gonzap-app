@@ -25,7 +25,7 @@ function GerenciarDocumentos() {
       try {
         let response = await fetch('http://localhost:8000/upload/documentos', {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          // headers: {'Content-Type': 'application/json'},
           body: formData,
         });
 
