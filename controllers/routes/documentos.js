@@ -2,19 +2,30 @@ const { app, con, s3 } = require('../server');
 require('dotenv').config();
 
 const multer = require('multer');
-const upload = multer({ storage: multer.memoryStorage() }); // Usando memória para armazenar temporariamente o arquivo
+const upload = multer({ storage: multer.memoryStorage() });
 
+app.get('/gridDocumentos', async function (req, res) {
+  let [query] = await con.promise().query(`select * from documentos`)
+
+  res.send(query);
+});
+
+
+
+
+// Rota de Upload
 app.post('/upload/documentos', upload.single('documento'), async (req, res) => {
   let documento;
-  
+console.log(req.file)
+console.log(req.file.originalname)
   if (!req.file) {
     return res.status(400).send({ error: 'Nenhum arquivo enviado.' });
   }
 
   s3.upload({
     Bucket: 'gonzap',
-    Key: req.file.originalname, // Usa o nome original do arquivo
-    Body: req.file.buffer // O arquivo é acessível no buffer em `req.file`
+    Key: 'Documentos/${req.file.originalname}',
+    Body: req.file.buffer
   },
     async (err, data) => {
       if (err) {
@@ -39,27 +50,6 @@ app.post('/upload/documentos', upload.single('documento'), async (req, res) => {
 
 
 
-
-
-/*
-// Rota de Upload
-app.post('/api/documentos', upload.single('file'), (req, res) => {
-  if (!req.file) {
-      return res.status(400).send('Nenhum arquivo enviado.');
-  }
-
-  // O S3 gerencia o armazenamento e retorna a URL do arquivo
-  const fileUrl = req.file.location;
-  const fileName = req.file.key; // Nome gerado no S3
-  const fileType = req.body.type; // 'audio' ou 'documento'
-
-  // Inserir no banco de dados a URL e informações do arquivo
-  const query = 'INSERT INTO arquivos (nome, caminho, tipo) VALUES (?, ?, ?)';
-  connectDb.query(query, [fileName, fileUrl, fileType], (err, result) => {
-      if (err) throw err;
-      res.status(200).json({ message: 'Arquivo enviado com sucesso!', fileId: result.insertId, url: fileUrl });
-  });
-});*/
 
 /*
 // Endpoint para listar documentos
